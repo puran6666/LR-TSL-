@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      String   @default("STAFF")
+  createdAt DateTime @default(now())
+}
+
+model Broker {
+  id         String   @id @default(cuid())
+  brokerName String
+  mobile     String
+  address    String?
+  createdAt  DateTime @default(now())
+  
+  vehicleEntries VehicleEntry[]
+}
+
+model VehicleEntry {
+  id                String   @id @default(cuid())
+  entryDate         DateTime
+  vehicleNumber     String
+  
+  brokerId          String
+  broker            Broker   @relation(fields: [brokerId], references: [id])
+  brokerName        String
+  
+  driverName        String
+  driverMobile      String
+  vehicleType       String
+  weight            Float
+  fromLocation      String
+  toDestination     String
+  pickupCompany     String
+  deliveryCompany   String
+  
+  lrNumber          String   @unique
+  invoiceNumber     String
+  packageCount      Int
+  billNumber        String?
+  ewayBillNumber    String?
+  ewayBillValidTill DateTime?
+  
+  freightAmount     Float
+  advancePaid       Float
+  hamaliCharges     Float    @default(0)
+  dieselCharges     Float    @default(0)
+  otherCharges      Float    @default(0)
+  balanceAmount     Float
+  balancePaid       Float    @default(0)
+  balancePaidDate   DateTime?
+  
+  deliveryStatus    String   @default("IN_TRANSIT")
+  remarks           String?
+  
+  createdBy         String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  payments          PaymentHistory[]
+}
+
+model PaymentHistory {
+  id             String       @id @default(cuid())
+  vehicleEntryId String
+  vehicleEntry   VehicleEntry @relation(fields: [vehicleEntryId], references: [id])
+  amount         Float
+  paymentDate    DateTime
+  paymentType    String
+  remarks        String?
+}
