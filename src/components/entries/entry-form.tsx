@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { vehicleEntrySchema, createVehicleEntry } from "@/actions/entry-actions";
+import { createVehicleEntry } from "@/actions/entry-actions";
+import { vehicleEntrySchema } from "@/schemas/vehicle-entry";
 import { Broker } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,7 @@ export function EntryForm({ brokers, userId }: EntryFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<z.infer<typeof vehicleEntrySchema>>({
-    resolver: zodResolver(vehicleEntrySchema),
+    resolver: zodResolver(vehicleEntrySchema) as any,
     defaultValues: {
       entryDate: new Date(),
       vehicleNumber: "",
@@ -99,8 +100,12 @@ export function EntryForm({ brokers, userId }: EntryFormProps) {
             </div>
             <div className="grid gap-2">
               <Label>Broker *</Label>
-              <Select onValueChange={(val) => setValue("brokerId", val)}>
-                <SelectTrigger>
+              <Select 
+                value={watch("brokerId")}
+                onValueChange={(val: string | null) => setValue("brokerId", val || "")}
+                items={brokers.map(b => ({ value: b.id, label: b.brokerName }))}
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select broker" />
                 </SelectTrigger>
                 <SelectContent>

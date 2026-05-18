@@ -75,7 +75,7 @@ export function Sidebar() {
         {session && (
           <div className="mb-4 px-3 text-sm text-zinc-400">
             <p className="truncate text-white font-medium">{session.user?.name || session.user?.email}</p>
-            <p className="text-xs uppercase mt-1 text-zinc-500">{session.user?.role}</p>
+            <p className="text-xs uppercase mt-1 text-zinc-500">{(session.user as any)?.role}</p>
           </div>
         )}
         <Button onClick={() => signOut({ callbackUrl: "/login" })} variant="ghost" className="w-full justify-start text-zinc-400 hover:text-white hover:bg-white/10">
