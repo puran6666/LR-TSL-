@@ -29,6 +29,7 @@ model Broker {
 model VehicleEntry {
   id                String   @id @default(cuid())
   entryDate         DateTime
+  loadingDate       DateTime?
   vehicleNumber     String
   
   brokerId          String
@@ -50,12 +51,12 @@ model VehicleEntry {
   billNumber        String?
   ewayBillNumber    String?
   ewayBillValidTill DateTime?
+  distance          Float?
   
   freightAmount     Float
   advancePaid       Float
   hamaliCharges     Float    @default(0)
-  dieselCharges     Float    @default(0)
-  otherCharges      Float    @default(0)
+  detentionCharges  Float    @default(0)
   balanceAmount     Float
   balancePaid       Float    @default(0)
   balancePaidDate   DateTime?

@@ -27,11 +27,13 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  meta?: any;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  meta,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -46,7 +48,12 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: "includesString",
+    globalFilterFn: (row, columnId, value) => {
+      const val = row.getValue(columnId);
+      if (val === null || val === undefined) return false;
+      return String(val).toLowerCase().includes(String(value).toLowerCase());
+    },
+    meta,
     state: {
       sorting,
       columnFilters,
@@ -54,6 +61,7 @@ export function DataTable<TData, TValue>({
     },
     onGlobalFilterChange: setGlobalFilter,
   });
+
 
   return (
     <div>

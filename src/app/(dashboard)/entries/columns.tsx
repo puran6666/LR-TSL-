@@ -2,39 +2,164 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { VehicleEntry } from "@prisma/client";
-import { format } from "date-fns";
+import { format, differenceInHours } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { AlertCircle, CheckCircle2, Clock, CalendarClock } from "lucide-react";
+import { ExtendValidityDialog } from "@/components/entries/extend-validity-dialog";
+import { EditEntryDialog } from "@/components/entries/edit-entry-dialog";
+import { ViewEntryDialog } from "@/components/entries/view-entry-dialog";
+import { DeleteEntryDialog } from "@/components/entries/delete-entry-dialog";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const columns: ColumnDef<VehicleEntry>[] = [
   {
-    accessorKey: "entryDate",
-    header: "Date",
-    cell: ({ row }) => {
-      const date = row.getValue("entryDate") as Date;
-      return <div className="min-w-[90px]">{format(new Date(date), "dd MMM yyyy")}</div>;
-    },
+    id: "vehicle_date",
+    header: "Vehicle / Date",
+    accessorFn: (row) => `${row.vehicleNumber} ${format(new Date(row.entryDate), "dd MMM yyyy")} ${row.loadingDate ? format(new Date(row.loadingDate), "dd MMM yyyy") : ""}`,
+    cell: ({ row }) => (
+      <div className="flex flex-col gap-0.5 min-w-[100px]">
+        <span className="font-bold uppercase text-zinc-900 dark:text-zinc-50 text-xs tracking-wider">
+          {row.original.vehicleNumber}
+        </span>
+        <div className="flex flex-col gap-0.5 text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
+          <span>Rep: {format(new Date(row.original.entryDate), "dd MMM yyyy")}</span>
+          {row.original.loadingDate && (
+            <span className="text-zinc-500 dark:text-zinc-400 font-semibold bg-zinc-50 dark:bg-zinc-900 px-1 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50 w-max mt-0.5">
+              Ld: {format(new Date(row.original.loadingDate), "dd MMM yyyy")}
+            </span>
+          )}
+        </div>
+      </div>
+    ),
   },
   {
-    accessorKey: "vehicleNumber",
-    header: "Vehicle No.",
-    cell: ({ row }) => <div className="font-semibold uppercase">{row.getValue("vehicleNumber")}</div>,
-  },
-  {
-    accessorKey: "brokerName",
+    id: "broker",
     header: "Broker",
+    accessorFn: (row) => `${row.brokerName} ${(row as any).broker?.mobile || ""}`,
+    cell: ({ row }) => {
+      const name = row.original.brokerName;
+      const brokerMobile = (row.original as any).broker?.mobile;
+      return (
+        <div className="flex items-center gap-2">
+          <div className="h-6 w-6 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 flex items-center justify-center text-[10px] font-bold border border-zinc-200/50 dark:border-zinc-800/50 shrink-0">
+            {name ? name.charAt(0).toUpperCase() : "B"}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs truncate max-w-[120px]" title={name}>
+              {name || "N/A"}
+            </span>
+            {brokerMobile && (
+              <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 mt-0.5">
+                {brokerMobile}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
   },
   {
-    accessorKey: "fromLocation",
-    header: "From",
-  },
-  {
-    accessorKey: "toDestination",
-    header: "To",
+    id: "route",
+    header: "Route",
+    accessorFn: (row) => `${row.fromLocation} to ${row.toDestination}`,
+    cell: ({ row }) => (
+      <div className="flex flex-col gap-0.5 text-xs">
+        <span className="font-semibold text-zinc-700 dark:text-zinc-300">{row.original.fromLocation}</span>
+        <span className="text-[10px] text-zinc-400 dark:text-zinc-500">to {row.original.toDestination}</span>
+      </div>
+    ),
   },
   {
     accessorKey: "lrNumber",
     header: "LR Number",
-    cell: ({ row }) => <div className="font-mono">{row.getValue("lrNumber")}</div>,
+    cell: ({ row }) => <div className="font-mono text-zinc-700 dark:text-zinc-300 font-bold text-xs">{row.getValue("lrNumber")}</div>,
+  },
+  {
+    accessorKey: "invoiceNumber",
+    header: "Invoice(s)",
+    cell: ({ row }) => {
+      const invoicesStr = row.getValue("invoiceNumber") as string;
+      if (!invoicesStr) return <span className="text-[10px] text-zinc-400 dark:text-zinc-500 italic">None</span>;
+      
+      const invoices = invoicesStr.split(",").map(s => s.trim()).filter(Boolean);
+      
+      return (
+        <div className="flex flex-wrap gap-1 max-w-[150px]">
+          {invoices.map((inv, idx) => (
+            <Badge 
+              key={idx} 
+              variant="outline" 
+              className="text-[9px] py-0 px-1.5 bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-mono font-medium rounded-sm shadow-none"
+            >
+              {inv}
+            </Badge>
+          ))}
+        </div>
+      );
+    }
+  },
+  {
+    accessorKey: "ewayBillNumber",
+    header: "E-Way Bill Status",
+    cell: ({ row }) => {
+      const ewayBillNo = row.getValue("ewayBillNumber") as string;
+      const validTill = row.original.ewayBillValidTill;
+      
+      if (!ewayBillNo) {
+        return <span className="text-[10px] text-zinc-400 dark:text-zinc-500 italic">Not Provided</span>;
+      }
+      
+      if (!validTill) {
+        return (
+          <div className="flex flex-col gap-0.5">
+            <span className="font-mono text-xs font-semibold text-zinc-800 dark:text-zinc-200">{ewayBillNo}</span>
+            <span className="text-[10px] text-zinc-400 dark:text-zinc-500">Validity not set</span>
+          </div>
+        );
+      }
+
+      const expiryDate = new Date(validTill);
+      const now = new Date();
+      const diffHours = differenceInHours(expiryDate, now);
+      
+      let status: "expired" | "expiring_soon" | "valid" = "valid";
+      if (diffHours < 0) {
+        status = "expired";
+      } else if (diffHours <= 48) {
+        status = "expiring_soon";
+      }
+
+      return (
+        <div className="flex flex-col gap-0.5">
+          <span className="font-mono text-xs font-semibold text-zinc-800 dark:text-zinc-200">{ewayBillNo}</span>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            {status === "expired" && (
+              <Badge variant="outline" className="text-[9px] py-0 px-1.5 h-4.5 font-bold bg-rose-500/[0.04] border-rose-500/15 text-rose-600 dark:text-rose-450 flex items-center gap-0.5 shadow-none rounded">
+                <AlertCircle className="w-2.5 h-2.5" /> EXPIRED
+              </Badge>
+            )}
+            {status === "expiring_soon" && (
+              <Badge variant="outline" className="text-[9px] py-0 px-1.5 h-4.5 font-bold bg-amber-500/[0.04] border-amber-500/15 text-amber-600 dark:text-amber-450 flex items-center gap-0.5 shadow-none rounded animate-pulse">
+                <Clock className="w-2.5 h-2.5" /> EXPIRING
+              </Badge>
+            )}
+            {status === "valid" && (
+              <Badge variant="outline" className="text-[9px] py-0 px-1.5 h-4.5 font-bold bg-emerald-500/[0.04] border-emerald-500/15 text-emerald-600 dark:text-emerald-450 flex items-center gap-0.5 shadow-none rounded">
+                <CheckCircle2 className="w-2.5 h-2.5" /> VALID
+              </Badge>
+            )}
+            <span className={`text-[10px] font-semibold ${
+              status === "expired" ? "text-rose-600/90 dark:text-rose-400" :
+              status === "expiring_soon" ? "text-amber-600/90 dark:text-amber-500" :
+              "text-zinc-500 dark:text-zinc-400"
+            }`}>
+              {format(expiryDate, "dd MMM")}
+            </span>
+          </div>
+        </div>
+      );
+    }
   },
   {
     accessorKey: "balanceAmount",
@@ -44,13 +169,50 @@ export const columns: ColumnDef<VehicleEntry>[] = [
       const formatted = new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
+        maximumFractionDigits: 0,
       }).format(amount);
-      
+
+      const isPaid = amount <= 0;
+
       return (
-        <div className={amount > 0 ? "text-orange-600 font-medium" : "text-emerald-600 font-medium"}>
-          {formatted}
+        <div className="flex flex-col gap-1 items-start">
+          <span className={isPaid ? "text-emerald-650 dark:text-emerald-400 font-bold text-xs" : "text-zinc-900 dark:text-zinc-100 font-bold text-xs"}>
+            {formatted}
+          </span>
+          <Badge 
+            variant="outline"
+            className={isPaid 
+              ? "bg-emerald-500/[0.04] border-emerald-500/10 text-emerald-600 dark:text-emerald-450 text-[9px] py-0 px-1.5 h-4.5 font-bold rounded shadow-none" 
+              : "bg-rose-500/[0.04] border-rose-500/10 text-rose-600 dark:text-rose-450 text-[9px] py-0 px-1.5 h-4.5 font-bold rounded shadow-none"}
+          >
+            {isPaid ? "PAID" : "PENDING"}
+          </Badge>
         </div>
       );
+    },
+  },
+  {
+    accessorKey: "balancePaid",
+    header: "Paid Amount",
+    cell: ({ row }) => {
+      const paid = parseFloat(row.getValue("balancePaid")) || 0;
+      const date = row.original.balancePaidDate ? format(new Date(row.original.balancePaidDate), "dd MMM yyyy") : null;
+      const formatted = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(paid);
+      return (
+        <div className="flex flex-col gap-0.5">
+          <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{formatted}</span>
+          {date && <span className="text-[9px] text-zinc-500 dark:text-zinc-400">{date}</span>}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "hamaliCharges",
+    header: "Hamali Charges",
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("hamaliCharges")) || 0;
+      const formatted = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount);
+      return <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200">{formatted}</span>;
     },
   },
   {
@@ -58,18 +220,67 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("deliveryStatus") as string;
+      const isDelivered = status === "DELIVERED";
+      const isDelayed = status === "DELAYED";
       return (
         <Badge 
-          variant={
-            status === "DELIVERED" ? "default" : 
-            status === "IN_TRANSIT" ? "secondary" : 
-            status === "DELAYED" ? "destructive" : "outline"
-          }
-          className={status === "DELIVERED" ? "bg-emerald-500 hover:bg-emerald-600" : ""}
+          variant="outline"
+          className={cn(
+            "text-[9px] py-0.5 px-2 font-semibold tracking-wide rounded-md shadow-none",
+            isDelivered 
+              ? "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200" 
+              : isDelayed
+              ? "bg-rose-500/[0.04] border-rose-500/10 text-rose-600 dark:text-rose-400"
+              : "bg-zinc-50 dark:bg-zinc-950 border-zinc-100 dark:border-zinc-900 text-zinc-500 dark:text-zinc-400"
+          )}
         >
           {status.replace("_", " ")}
         </Badge>
       );
     },
   },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row, table }) => {
+      const entry = row.original;
+      const { brokers, userId } = (table.options.meta || { brokers: [], userId: "admin-bypass" }) as any;
+      
+      return (
+        <div className="flex items-center gap-1.5">
+          <ViewEntryDialog entry={entry} />
+          <EditEntryDialog 
+            entry={entry} 
+            brokers={brokers} 
+            userId={userId} 
+          />
+          {entry.ewayBillNumber && (
+            <ExtendValidityDialog 
+              id={entry.id} 
+              vehicleNumber={entry.vehicleNumber} 
+              lrNumber={entry.lrNumber} 
+              ewayBillNumber={entry.ewayBillNumber} 
+              currentExpiryDate={entry.ewayBillValidTill}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-550 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded-md"
+                  title="Extend E-Way Bill Validity"
+                >
+                  <CalendarClock className="h-4 w-4" />
+                </Button>
+              }
+            />
+          )}
+          <DeleteEntryDialog 
+            id={entry.id} 
+            vehicleNumber={entry.vehicleNumber} 
+            lrNumber={entry.lrNumber} 
+          />
+        </div>
+      );
+    }
+  }
 ];
+

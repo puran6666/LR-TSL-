@@ -60,8 +60,7 @@ async function main() {
       freightAmount: 45000,
       advancePaid: 10000,
       hamaliCharges: 500,
-      dieselCharges: 2000,
-      balanceAmount: 32500,
+      balanceAmount: 34500,
       deliveryStatus: "IN_TRANSIT",
       createdBy: admin.id,
     }

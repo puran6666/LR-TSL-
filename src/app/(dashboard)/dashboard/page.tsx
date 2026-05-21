@@ -1,99 +1,490 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Truck, AlertTriangle, CheckCircle, IndianRupee } from "lucide-react";
-import { getDashboardStats } from "@/actions/entry-actions";
+import { Truck, AlertTriangle, CheckCircle, IndianRupee, TrendingUp, Clock, CalendarClock, Eye, Trash2, MapPin, FileWarning } from "lucide-react";
+import { getDashboardStats, getExpiringEwayBills, getRecentVehicleEntries, getInTransitVehicles } from "@/actions/entry-actions";
+import { getBrokers } from "@/actions/broker-actions";
+import { auth } from "@/auth";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ExtendValidityDialog } from "@/components/entries/extend-validity-dialog";
+import { EditEntryDialog } from "@/components/entries/edit-entry-dialog";
+import { ViewEntryDialog } from "@/components/entries/view-entry-dialog";
+import { DeleteEntryDialog } from "@/components/entries/delete-entry-dialog";
+import { format, differenceInHours, differenceInDays } from "date-fns";
 
 export default async function DashboardPage() {
+  const session = await auth();
   const statsResult = await getDashboardStats();
+  const expiringResult = await getExpiringEwayBills();
+  const brokersResult = await getBrokers();
+  const recentResult = await getRecentVehicleEntries(10, true);
+  const inTransitResult = await getInTransitVehicles();
+
   const stats = statsResult.success && statsResult.data ? statsResult.data : {
     totalVehiclesToday: 0,
     pendingBalance: 0,
     deliveredVehicles: 0,
-    expiredEwayBills: 0
+    expiredEwayBills: 0,
+    totalVehiclesBooked: 0,
+    totalOutstanding: 0
   };
 
+  const expiringBills = expiringResult.success ? expiringResult.data || [] : [];
+  const brokers = brokersResult.success ? brokersResult.data || [] : [];
+  const recentEntries = recentResult.success ? recentResult.data || [] : [];
+  const inTransitEntries = inTransitResult.success ? inTransitResult.data || [] : [];
+  const userId = session?.user?.id || "admin-bypass";
+
   return (
-    <div className="flex-1 space-y-4">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+    <div className="flex-1 space-y-6">
+      <div className="text-center text-sm font-bold text-black dark:text-zinc-200 tracking-wider select-none">
+        || ॐ नमः शिवाय ||
+      </div>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-550">
+            Logistics Overview
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            Real-time analytics, dispatch operations, and financial outstanding.
+          </p>
+        </div>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Card 1: Total Vehicles Today */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               Total Vehicles Today
             </CardTitle>
-            <Truck className="h-4 w-4 text-muted-foreground" />
+            <div className="p-1 rounded-md bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border border-zinc-200/50 dark:border-zinc-800/50">
+              <Truck className="h-4 w-4" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalVehiclesToday}</div>
-            <p className="text-xs text-muted-foreground">
-              Dispatched today
-            </p>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">{stats.totalVehiclesToday}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
+              <TrendingUp className="h-3 w-3 text-zinc-400" />
+              <span>Active dispatches today</span>
+            </div>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+
+        {/* Card 2: Vehicles In Transit */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              Vehicles In Transit
+            </CardTitle>
+            <div className="p-1 rounded-md bg-blue-500/[0.04] text-blue-600 dark:text-blue-450 border border-blue-500/10">
+              <Truck className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-blue-600 dark:text-blue-400">{inTransitEntries.length}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
+              <span>Active shipments on road</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Pending Balance */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               Pending Balance
             </CardTitle>
-            <IndianRupee className="h-4 w-4 text-orange-500" />
+            <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
+              <IndianRupee className="h-4 w-4" />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">₹{stats.pendingBalance.toLocaleString('en-IN')}</div>
-            <p className="text-xs text-muted-foreground">
-              Total outstanding
-            </p>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">₹{stats.pendingBalance.toLocaleString('en-IN')}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
+              <span className="text-rose-600/90 dark:text-rose-405 font-medium">Total outstanding dues</span>
+            </div>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Delivered Vehicles
-            </CardTitle>
-            <CheckCircle className="h-4 w-4 text-emerald-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-emerald-600">{stats.deliveredVehicles}</div>
-            <p className="text-xs text-muted-foreground">
-              In the last 7 days
-            </p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Expired E-way Bills
-            </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{stats.expiredEwayBills}</div>
-            <p className="text-xs text-muted-foreground">
-              Requires immediate action
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+<Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+    <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+      Expired E-way Bills
+    </CardTitle>
+    <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
+      <AlertTriangle className="h-4 w-4" />
+    </div>
+  </CardHeader>
+  <CardContent className="p-4 pt-0">
+    <div className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400">{stats.expiredEwayBills}</div>
+    <div className="flex items-center gap-1 mt-1 text-[10px] text-rose-600 dark:text-rose-400 font-semibold animate-pulse">
+      <span>Requires immediate extension</span>
+    </div>
+  </CardContent>
+</Card>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
+
+
+        {/* Card 5: Total Vehicles Booked */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              Total Vehicles Booked
+            </CardTitle>
+            <div className="p-1 rounded-md bg-indigo-500/[0.04] text-indigo-600 dark:text-indigo-450 border border-indigo-500/10">
+              <CalendarClock className="h-4 w-4" />
+            </div>
           </CardHeader>
-          <CardContent className="pl-2 flex justify-center items-center h-[300px] text-muted-foreground">
-            Chart will be implemented in Phase 4
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400">{stats.totalVehiclesBooked}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
+              <span>Total vehicles ever booked</span>
+            </div>
           </CardContent>
         </Card>
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+
+        {/* Card 6: Total Outstanding */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              Freight Amount
+            </CardTitle>
+            <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
+              <IndianRupee className="h-4 w-4" />
+            </div>
           </CardHeader>
-          <CardContent className="flex justify-center items-center h-[300px] text-muted-foreground">
-            Activity list will be implemented here
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400">₹{stats.totalOutstanding.toLocaleString('en-IN')}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
+              <span>Total outstanding dues</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        </div>
+
+      {/* E-Way Bill Expiry Alerts — IN_TRANSIT only, auto-hidden once extended or delivered */}
+      {expiringBills.length > 0 && (
+        <div className="border border-rose-500/15 dark:border-rose-500/10 rounded-xl overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-2.5 bg-rose-50/60 dark:bg-rose-950/10 border-b border-rose-500/10">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+              <FileWarning className="w-3.5 h-3.5 text-rose-500" />
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-700 dark:text-rose-400">
+                E-Way Bill Alerts — In-Transit Vehicles ({expiringBills.length})
+              </span>
+            </div>
+            <span className="text-[9px] font-semibold text-rose-500/70 dark:text-rose-400/60 italic">
+              Auto-clears once extended or delivered
+            </span>
+          </div>
+
+          {/* Cards grid */}
+          <div className="p-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+            {expiringBills.map((bill) => {
+                const expiryDate = new Date(bill.ewayBillValidTill!);
+                const now = new Date();
+                const diffHours = differenceInHours(expiryDate, now);
+                const diffDays = differenceInDays(expiryDate, now);
+                // Extension window: from 4:00 PM on expiry date to 8:00 AM next day
+                const extensionStart = new Date(expiryDate);
+                extensionStart.setHours(16, 0, 0, 0);
+                const extensionEnd = new Date(expiryDate);
+                extensionEnd.setDate(extensionEnd.getDate() + 1);
+                extensionEnd.setHours(8, 0, 0, 0);
+                const isExpired = now > extensionEnd; // fully expired after window
+                const isInExtensionWindow = now >= extensionStart && now <= extensionEnd;
+                const isUrgent = !isExpired && diffHours <= 12; // keep urgent indicator for near expiry
+                // Countdown display
+                let countdownLabel;
+                if (isExpired) {
+                  const daysAgo = Math.abs(diffDays);
+                  const hoursAgo = Math.abs(Math.floor(diffHours));
+                  countdownLabel = `Expired ${daysAgo > 0 ? `${daysAgo}d` : `${hoursAgo}h`} ago`;
+                } else if (isInExtensionWindow) {
+                  const remainingHours = Math.max(0, Math.round((extensionEnd.getTime() - now.getTime()) / (1000 * 60 * 60)));
+                  countdownLabel = `Extension window: ${remainingHours}h left`;
+                } else {
+                  countdownLabel = diffDays >= 1 ? `${diffDays}d ${Math.floor(diffHours % 24)}h left` : `${Math.floor(diffHours)}h left`;
+                }
+
+              return (
+                <div
+                  key={bill.id}
+                  className={`rounded-lg border bg-white dark:bg-zinc-950 overflow-hidden ${
+                    isExpired
+                      ? "border-rose-500/20"
+                      : isUrgent
+                      ? "border-amber-500/25"
+                      : "border-zinc-200 dark:border-zinc-800"
+                  }`}
+                >
+                  {/* Top stripe */}
+                  <div className={`h-0.5 w-full ${
+                    isExpired ? "bg-rose-500" : isUrgent ? "bg-amber-400" : "bg-amber-300"
+                  }`} />
+
+                  <div className="p-3 space-y-2.5">
+                    {/* Vehicle + status badge */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                          {bill.vehicleNumber}
+                        </span>
+                        <div className="flex items-center gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
+                          <MapPin className="w-2.5 h-2.5 shrink-0" />
+                          <span className="truncate max-w-[160px]">{bill.fromLocation} → {bill.toDestination}</span>
+                        </div>
+                      </div>
+                      <span className={`shrink-0 text-[8px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                        isExpired
+                          ? "bg-rose-500/8 text-rose-600 border border-rose-500/15"
+                          : isUrgent
+                          ? "bg-amber-500/8 text-amber-600 border border-amber-500/15 animate-pulse"
+                          : "bg-amber-500/8 text-amber-600 border border-amber-500/15"
+                      }`}>
+                        {isExpired ? "EXPIRED" : "EXPIRING"}
+                      </span>
+                    </div>
+
+                    {/* E-way number + countdown */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-[10px] font-semibold text-zinc-500 dark:text-zinc-400">
+                        {bill.ewayBillNumber}
+                      </span>
+                      <div className={`flex items-center gap-1 text-[10px] font-extrabold rounded px-1.5 py-0.5 ${
+                        isExpired
+                          ? "text-rose-600 dark:text-rose-400 bg-rose-500/5"
+                          : isUrgent
+                          ? "text-amber-600 dark:text-amber-400 bg-amber-500/5 animate-pulse"
+                          : "text-amber-600 dark:text-amber-400 bg-amber-500/5"
+                      }`}>
+                        <Clock className="w-2.5 h-2.5" />
+                        {countdownLabel}
+                      </div>
+                    </div>
+
+                    {/* Expiry date line */}
+                    <div className="text-[9px] text-zinc-400 dark:text-zinc-500">
+                      {isExpired
+                        ? <span className="text-rose-500">Expired on {format(expiryDate, "dd MMM yyyy, hh:mm a")}</span>
+                        : <span>Valid till <strong className="text-zinc-600 dark:text-zinc-300">{format(expiryDate, "dd MMM yyyy")}</strong></span>
+                      }
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex items-center gap-1.5 pt-0.5 border-t border-zinc-100 dark:border-zinc-900">
+                      <ExtendValidityDialog
+                        id={bill.id}
+                        vehicleNumber={bill.vehicleNumber}
+                        lrNumber={bill.lrNumber}
+                        ewayBillNumber={bill.ewayBillNumber}
+                        currentExpiryDate={bill.ewayBillValidTill}
+                        trigger={
+                          <button
+                            type="button"
+                            className="flex-1 flex items-center justify-center gap-1 text-[9px] font-bold py-1 rounded border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-300 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-all"
+                          >
+                            <CalendarClock className="w-2.5 h-2.5" /> EXTEND NOW
+                          </button>
+                        }
+                      />
+                      <EditEntryDialog
+                        entry={bill as any}
+                        brokers={brokers}
+                        userId={userId}
+                        trigger={
+                          <button
+                            type="button"
+                            className="px-2 text-[9px] font-bold py-1 rounded border border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer transition-all"
+                          >
+                            EDIT
+                          </button>
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 space-y-6">
+        {/* Recent 10 Vehicles Table Card */}
+        <Card className="w-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl overflow-hidden">
+          <CardHeader className="pb-3.5 border-b border-zinc-100 dark:border-zinc-800">
+            <CardTitle className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center justify-between">
+              <span className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 uppercase tracking-wider text-xs">
+                <Truck className="h-4 w-4 text-zinc-650 dark:text-zinc-450" />
+                Recent 10 Vehicles
+              </span>
+              <span className="text-[9px] uppercase bg-zinc-50 dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 font-bold px-2.5 py-0.5 rounded-md border border-zinc-250/20 dark:border-zinc-800">
+                Ledger
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-250/30 dark:border-zinc-800/40 text-zinc-450 font-bold uppercase text-[9px] tracking-wider h-11">
+                    <th className="px-4 font-semibold">Vehicle / Date</th>
+                    <th className="px-4 font-semibold">Route</th>
+                    <th className="px-4 font-semibold">E-Way Bill Status</th>
+                    <th className="px-4 font-semibold">Broker</th>
+                    <th className="px-4 font-semibold text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
+                  {recentEntries.length > 0 ? (
+                    recentEntries.map((entry) => {
+                      // E-way status calculations
+                      let ewayStatus: "none" | "expired" | "expiring" | "valid" = "none";
+                      let diffHours = 0;
+                      if (entry.ewayBillNumber) {
+                        if (entry.ewayBillValidTill) {
+                          diffHours = differenceInHours(new Date(entry.ewayBillValidTill), new Date());
+                          if (diffHours < 0) ewayStatus = "expired";
+                          else if (diffHours <= 48) ewayStatus = "expiring";
+                          else ewayStatus = "valid";
+                        } else {
+                          ewayStatus = "none";
+                        }
+                      }
+
+                      return (
+                        <tr key={entry.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
+                          <td className="py-3.5 px-4">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider">{entry.vehicleNumber}</span>
+                              <div className="flex flex-col gap-0.5 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
+                                <span>Rep: {format(new Date(entry.entryDate), "dd MMM yyyy")}</span>
+                                {entry.loadingDate && (
+                                  <span className="text-zinc-500 dark:text-zinc-400 font-semibold bg-zinc-50 dark:bg-zinc-900 px-1 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50 w-max mt-0.5">
+                                    Ld: {format(new Date(entry.loadingDate), "dd MMM yyyy")}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="flex flex-col gap-0.5 text-xs">
+                              <span className="font-semibold text-zinc-700 dark:text-zinc-300">{entry.fromLocation}</span>
+                              <span className="text-[10px] text-zinc-450 dark:text-zinc-500">to {entry.toDestination}</span>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            {entry.ewayBillNumber ? (
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-mono text-xs font-semibold text-zinc-800 dark:text-zinc-200">{entry.ewayBillNumber}</span>
+                                {entry.ewayBillValidTill ? (
+                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                    {ewayStatus === "expired" && (
+                                      <Badge variant="outline" className="text-[8px] py-0 px-1 font-bold bg-rose-500/[0.04] border-rose-500/15 text-rose-600 dark:text-rose-450 shadow-none rounded-sm">EXP</Badge>
+                                    )}
+                                    {ewayStatus === "expiring" && (
+                                      <Badge variant="outline" className="text-[8px] py-0 px-1 font-bold bg-amber-500/[0.04] border-amber-500/15 text-amber-600 dark:text-amber-450 shadow-none rounded-sm animate-pulse">EXPING</Badge>
+                                    )}
+                                    {ewayStatus === "valid" && (
+                                      <Badge variant="outline" className="text-[8px] py-0 px-1 font-bold bg-emerald-500/[0.04] border-emerald-500/15 text-emerald-600 dark:text-emerald-450 shadow-none rounded-sm">VAL</Badge>
+                                    )}
+                                    <span className={`text-[10px] font-semibold ${
+                                      ewayStatus === "expired" ? "text-rose-600 dark:text-rose-400" :
+                                      ewayStatus === "expiring" ? "text-amber-600 dark:text-amber-500" :
+                                      "text-zinc-500 dark:text-zinc-400"
+                                    }`}>
+                                      {format(new Date(entry.ewayBillValidTill), "dd MMM")}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500">No validity</span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-zinc-400 dark:text-zinc-500 italic text-[10px]">Not Provided</span>
+                            )}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2">
+                              <div className="h-6 w-6 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 flex items-center justify-center text-[10px] font-bold border border-zinc-200/50 dark:border-zinc-800/50 shrink-0">
+                                {entry.brokerName ? entry.brokerName.charAt(0).toUpperCase() : "B"}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs truncate max-w-[120px]" title={entry.brokerName || ""}>
+                                  {entry.brokerName || "N/A"}
+                                </span>
+                                {(entry as any).broker?.mobile && (
+                                  <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 mt-0.5">
+                                    {(entry as any).broker.mobile}
+                                  </span>
+                                )}
+                                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5" title={`Driver: ${entry.driverName}`}>
+                                  Dr: {entry.driverMobile}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <ViewEntryDialog 
+                                entry={entry as any}
+                                trigger={
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-550 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md" title="View Entry Details">
+                                    <Eye className="w-3.5 h-3.5" />
+                                  </Button>
+                                }
+                              />
+                              <EditEntryDialog 
+                                entry={entry as any}
+                                brokers={brokers}
+                                userId={userId}
+                                trigger={
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-550 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md" title="Edit Entry">
+                                    <Clock className="w-3.5 h-3.5" />
+                                  </Button>
+                                }
+                              />
+                              {entry.ewayBillNumber && (
+                                <ExtendValidityDialog 
+                                  id={entry.id}
+                                  vehicleNumber={entry.vehicleNumber}
+                                  lrNumber={entry.lrNumber}
+                                  ewayBillNumber={entry.ewayBillNumber}
+                                  currentExpiryDate={entry.ewayBillValidTill}
+                                  trigger={
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-550 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md" title="Extend E-Way Bill Validity">
+                                      <CalendarClock className="w-3.5 h-3.5" />
+                                    </Button>
+                                  }
+                                />
+                              )}
+                              <DeleteEntryDialog 
+                                id={entry.id}
+                                vehicleNumber={entry.vehicleNumber}
+                                lrNumber={entry.lrNumber}
+                                trigger={
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-550 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-450 hover:bg-rose-50/50 dark:hover:bg-rose-950/20 rounded-md" title="Delete Entry">
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </Button>
+                                }
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-zinc-400 dark:text-zinc-550 italic">
+                        No dispatches added yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -12,7 +12,7 @@ function Dialog({ ...props }: DialogPrimitive.Root.Props) {
 }
 
 function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
+  return <DialogPrimitive.Trigger {...props} />
 }
 
 function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
@@ -20,7 +20,7 @@ function DialogPortal({ ...props }: DialogPrimitive.Portal.Props) {
 }
 
 function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
+  return <DialogPrimitive.Close {...props} />
 }
 
 function DialogOverlay({
@@ -61,7 +61,6 @@ function DialogContent({
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close
-            data-slot="dialog-close"
             render={
               <Button
                 variant="ghost"

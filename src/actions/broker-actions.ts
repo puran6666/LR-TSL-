@@ -3,12 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-
-const brokerSchema = z.object({
-  brokerName: z.string().min(1, "Broker name is required"),
-  mobile: z.string().min(10, "Valid mobile number is required"),
-  address: z.string().optional(),
-});
+import { brokerSchema } from "@/lib/schemas";
 
 export async function getBrokers() {
   try {
