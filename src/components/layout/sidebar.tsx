@@ -80,9 +80,15 @@ export function Sidebar() {
       </div>
       <div className="px-4 py-2 border-t border-zinc-100 dark:border-zinc-900/80 pt-4">
         {session && (
+<<<<<<< HEAD
           <div className="mb-4 px-3 py-2 text-sm bg-zinc-50 dark:bg-zinc-900/30 rounded-xl border border-zinc-100 dark:border-zinc-900/50">
             <p className="truncate text-zinc-800 dark:text-zinc-200 font-semibold">{session.user?.name || session.user?.email}</p>
             <p className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 mt-0.5">{(session.user as any)?.role || "STAFF"}</p>
+=======
+          <div className="mb-4 px-3 text-sm text-zinc-400">
+            <p className="truncate text-white font-medium">{session.user?.name || session.user?.email}</p>
+            <p className="text-xs uppercase mt-1 text-zinc-500">{(session.user as any)?.role}</p>
+>>>>>>> 1980623d1f6b341b7ae7042e22a7fe4444005819
           </div>
         )}
         <Button 

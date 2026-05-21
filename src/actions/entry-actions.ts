@@ -3,10 +3,14 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+<<<<<<< HEAD
 import { vehicleEntrySchema } from "@/lib/schemas";
 // Utility for date handling – already installed via date-fns in the project
 import { addDays } from "date-fns"; // used for clarity in calculations (optional)
 
+=======
+import { vehicleEntrySchema } from "@/schemas/vehicle-entry";
+>>>>>>> 1980623d1f6b341b7ae7042e22a7fe4444005819
 
 export async function getVehicleEntries() {
   try {

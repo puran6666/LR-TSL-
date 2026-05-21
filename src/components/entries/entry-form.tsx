@@ -5,9 +5,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
+<<<<<<< HEAD
 import { createVehicleEntry, updateVehicleEntry } from "@/actions/entry-actions";
 import { vehicleEntrySchema } from "@/lib/schemas";
 import { Broker, VehicleEntry } from "@prisma/client";
+=======
+import { createVehicleEntry } from "@/actions/entry-actions";
+import { vehicleEntrySchema } from "@/schemas/vehicle-entry";
+import { Broker } from "@prisma/client";
+>>>>>>> 1980623d1f6b341b7ae7042e22a7fe4444005819
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -206,6 +212,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
               <div className="h-1.5 w-3 rounded-full bg-zinc-400 dark:bg-zinc-650" />
               <h3 className="text-xs uppercase font-extrabold tracking-wider text-zinc-550 dark:text-zinc-405">Basic Details</h3>
             </div>
+<<<<<<< HEAD
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Vehicle Number *</Label>
@@ -298,6 +305,25 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 </Select>
               </div>
 
+=======
+            <div className="grid gap-2">
+              <Label>Broker *</Label>
+              <Select 
+                value={watch("brokerId")}
+                onValueChange={(val: string | null) => setValue("brokerId", val || "")}
+                items={brokers.map(b => ({ value: b.id, label: b.brokerName }))}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select broker" />
+                </SelectTrigger>
+                <SelectContent>
+                  {brokers.map((b) => (
+                    <SelectItem key={b.id} value={b.id}>{b.brokerName}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.brokerId && <span className="text-xs text-red-500">{errors.brokerId.message}</span>}
+>>>>>>> 1980623d1f6b341b7ae7042e22a7fe4444005819
             </div>
           </div>
 
