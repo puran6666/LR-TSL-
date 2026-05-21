@@ -40,6 +40,12 @@ export async function createVehicleEntry(formData: z.infer<typeof vehicleEntrySc
     }
     // ---------------------------------------------------
 
+      // ---- Calculate balance without hamali charges ----
+      const freight = validatedData.freightAmount ?? 0;
+      const detention = validatedData.detentionCharges ?? 0;
+      validatedData.balanceAmount = freight + detention;
+      // ---------------------------------------------------
+    
     // Check if LR number exists
     const existingLr = await prisma.vehicleEntry.findUnique({
       where: { lrNumber: validatedData.lrNumber }
