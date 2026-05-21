@@ -5,15 +5,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-<<<<<<< HEAD
 import { createVehicleEntry, updateVehicleEntry } from "@/actions/entry-actions";
 import { vehicleEntrySchema } from "@/lib/schemas";
 import { Broker, VehicleEntry } from "@prisma/client";
-=======
-import { createVehicleEntry } from "@/actions/entry-actions";
-import { vehicleEntrySchema } from "@/schemas/vehicle-entry";
-import { Broker } from "@prisma/client";
->>>>>>> 1980623d1f6b341b7ae7042e22a7fe4444005819
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
