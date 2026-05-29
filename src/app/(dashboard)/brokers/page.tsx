@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AddBrokerDialog } from "@/components/brokers/add-broker-dialog";
 import { User, Phone, MapPin } from "lucide-react";
 
+import { BrokerActionsDropdown } from "@/components/brokers/broker-actions-dropdown";
+
 export default async function BrokersPage() {
   const brokersResult = await getBrokers();
   const brokers = brokersResult.success && brokersResult.data ? brokersResult.data : [];
@@ -36,13 +38,14 @@ export default async function BrokersPage() {
               key={broker.id} 
               className="group border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-zinc-350 dark:hover:border-zinc-700"
             >
-              <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-900">
+              <CardHeader className="pb-3 border-b border-zinc-100 dark:border-zinc-900 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="flex items-center gap-2 text-lg font-bold text-zinc-800 dark:text-zinc-100">
                   <div className="h-8 w-8 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/55 dark:border-zinc-800/50 text-zinc-750 dark:text-zinc-300 flex items-center justify-center text-sm font-semibold shadow-sm group-hover:scale-105 transition-transform">
                     {broker.brokerName.charAt(0).toUpperCase()}
                   </div>
                   <span className="truncate">{broker.brokerName}</span>
                 </CardTitle>
+                <BrokerActionsDropdown broker={broker} />
               </CardHeader>
               <CardContent className="pt-4 space-y-3">
                 <div className="flex items-center gap-2.5 text-sm text-zinc-600 dark:text-zinc-300">
