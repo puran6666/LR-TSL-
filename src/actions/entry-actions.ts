@@ -56,13 +56,18 @@ export async function createVehicleEntry(formData: z.infer<typeof vehicleEntrySc
         createdBy: userId,
       },
     });
-    revalidatePath("/entries");
+    try {
+      revalidatePath("/entries");
+    } catch(e) {
+      console.log("revalidate error", e);
+    }
     return { success: true, data: entry };
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return { success: false, error: "Validation failed" };
     }
-    return { success: false, error: "Failed to create entry" };
+    console.error("Entry creation error:", error);
+    return { success: false, error: error?.message || "Failed to create entry" };
   }
 }
 

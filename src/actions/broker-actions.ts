@@ -22,10 +22,15 @@ export async function createBroker(formData: z.infer<typeof brokerSchema>) {
     const broker = await prisma.broker.create({
       data: validatedData,
     });
-    revalidatePath("/brokers");
+    try {
+      revalidatePath("/brokers");
+    } catch (e) {
+      console.log("Revalidate path failed, but broker was created:", e);
+    }
     return { success: true, data: broker };
-  } catch (error) {
-    return { success: false, error: "Failed to create broker" };
+  } catch (error: any) {
+    console.error("Broker creation error:", error);
+    return { success: false, error: error?.message || "Failed to create broker" };
   }
 }
 

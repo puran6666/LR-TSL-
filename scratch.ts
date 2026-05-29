@@ -1,3 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-console.log("Prisma instantiated");
+async function test() {
+  const brokers = await prisma.broker.findMany();
+  console.log(brokers);
+}
+test();
