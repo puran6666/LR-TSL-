@@ -17,10 +17,8 @@ export function MobileSidebar() {
 
   return (
     <Sheet>
-      <SheetTrigger>
-        <Button variant="ghost" size="icon" className="md:hidden">
-          <Menu />
-        </Button>
+      <SheetTrigger render={<Button variant="ghost" size="icon" className="md:hidden" />}>
+        <Menu />
       </SheetTrigger>
       <SheetContent side="left" className="p-0 border-none w-72">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>

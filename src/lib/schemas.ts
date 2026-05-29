@@ -32,6 +32,7 @@ export const vehicleEntrySchema = z.object({
   balancePaidDate: z.preprocess((val) => (val === "" || val === null || val === undefined ? null : typeof val === "string" ? new Date(val) : val), z.date().optional().nullable()),
   
   deliveryStatus: z.enum(["IN_TRANSIT", "DELIVERED", "CANCELLED"]).default("IN_TRANSIT"),
+  mode: z.enum(["NORMAL", "EXPRESS"]).default("NORMAL"),
   remarks: z.string().optional(),
 });
 

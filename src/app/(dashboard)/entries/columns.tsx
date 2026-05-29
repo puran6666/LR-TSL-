@@ -217,25 +217,38 @@ export const columns: ColumnDef<VehicleEntry>[] = [
   },
   {
     accessorKey: "deliveryStatus",
-    header: "Status",
+    header: "Status / Mode",
     cell: ({ row }) => {
       const status = row.getValue("deliveryStatus") as string;
+      const mode = (row.original as any).mode as string;
       const isDelivered = status === "DELIVERED";
       const isDelayed = status === "DELAYED";
       return (
-        <Badge 
-          variant="outline"
-          className={cn(
-            "text-[9px] py-0.5 px-2 font-semibold tracking-wide rounded-md shadow-none",
-            isDelivered 
-              ? "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200" 
-              : isDelayed
-              ? "bg-rose-500/[0.04] border-rose-500/10 text-rose-600 dark:text-rose-400"
-              : "bg-zinc-50 dark:bg-zinc-950 border-zinc-100 dark:border-zinc-900 text-zinc-500 dark:text-zinc-400"
+        <div className="flex flex-col gap-1 items-start">
+          <Badge 
+            variant="outline"
+            className={cn(
+              "text-[9px] py-0.5 px-2 font-semibold tracking-wide rounded-md shadow-none",
+              isDelivered 
+                ? "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200" 
+                : isDelayed
+                ? "bg-rose-500/[0.04] border-rose-500/10 text-rose-600 dark:text-rose-400"
+                : "bg-zinc-50 dark:bg-zinc-950 border-zinc-100 dark:border-zinc-900 text-zinc-500 dark:text-zinc-400"
+            )}
+          >
+            {status.replace("_", " ")}
+          </Badge>
+          {mode === "EXPRESS" && (
+            <Badge variant="outline" className="text-[8px] py-0 px-1.5 bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 uppercase shadow-none font-bold">
+              Express
+            </Badge>
           )}
-        >
-          {status.replace("_", " ")}
-        </Badge>
+          {mode === "NORMAL" && (
+            <Badge variant="outline" className="text-[8px] py-0 px-1.5 bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 uppercase shadow-none font-bold">
+              Normal
+            </Badge>
+          )}
+        </div>
       );
     },
   },

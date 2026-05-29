@@ -68,6 +68,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       balancePaidDate: initialData?.balancePaidDate ? formatDateForInput(initialData.balancePaidDate) as any : null,
       deliveryStatus: (initialData?.deliveryStatus as any) || "IN_TRANSIT",
       remarks: initialData?.remarks || "",
+      mode: (initialData?.mode as any) || "NORMAL",
       ewayBillNumber: initialData?.ewayBillNumber || "",
       ewayBillValidTill: initialData?.ewayBillValidTill ? formatDateForInput(initialData.ewayBillValidTill) as any : null,
       distance: (initialData?.distance ?? "") as any,
@@ -110,6 +111,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
         balancePaid: initialData.balancePaid,
         balancePaidDate: initialData.balancePaidDate ? formatDateForInput(initialData.balancePaidDate) as any : null,
         deliveryStatus: initialData.deliveryStatus as any,
+        mode: (initialData as any).mode || "NORMAL",
         remarks: initialData.remarks || "",
         ewayBillNumber: initialData.ewayBillNumber || "",
         ewayBillValidTill: initialData.ewayBillValidTill ? formatDateForInput(initialData.ewayBillValidTill) as any : null,
@@ -295,6 +297,21 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                     <SelectItem value="IN_TRANSIT">In Transit</SelectItem>
                     <SelectItem value="DELIVERED">Delivered</SelectItem>
                     <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Mode</Label>
+                <Select 
+                  value={watch("mode")} 
+                  onValueChange={(val) => setValue("mode", val as any)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NORMAL">Normal</SelectItem>
+                    <SelectItem value="EXPRESS">Express</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

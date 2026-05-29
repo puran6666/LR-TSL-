@@ -99,6 +99,15 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
               <Badge variant="outline" className="text-xs uppercase bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 py-0.5 px-2.5">
                 {entry.deliveryStatus}
               </Badge>
+              {((entry as any).mode === "EXPRESS") ? (
+                <Badge variant="outline" className="text-xs py-0.5 px-2.5 bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 uppercase font-bold">
+                  Express
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-xs py-0.5 px-2.5 bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 uppercase font-bold">
+                  Normal
+                </Badge>
+              )}
             </div>
           </div>
         </DialogHeader>

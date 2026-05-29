@@ -63,6 +63,7 @@ model VehicleEntry {
   
   deliveryStatus    String   @default("IN_TRANSIT")
   remarks           String?
+  mode              String   @default("NORMAL")
   
   createdBy         String
   createdAt         DateTime @default(now())
