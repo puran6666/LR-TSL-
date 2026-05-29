@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 interface EntryFormProps {
   brokers: Broker[];
   userId: string;
-  initialData?: VehicleEntry | null;
+  initialData?: (VehicleEntry & { mode?: string }) | null;
   onSuccess?: () => void;
 }
 
@@ -68,7 +68,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       balancePaidDate: initialData?.balancePaidDate ? formatDateForInput(initialData.balancePaidDate) as any : null,
       deliveryStatus: (initialData?.deliveryStatus as any) || "IN_TRANSIT",
       remarks: initialData?.remarks || "",
-      mode: (initialData?.mode as any) || "NORMAL",
+      mode: ((initialData as any)?.mode) || "NORMAL",
       ewayBillNumber: initialData?.ewayBillNumber || "",
       ewayBillValidTill: initialData?.ewayBillValidTill ? formatDateForInput(initialData.ewayBillValidTill) as any : null,
       distance: (initialData?.distance ?? "") as any,
