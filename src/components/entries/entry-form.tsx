@@ -43,6 +43,11 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
     return val ? val.split(",").map(s => s.trim()).filter(Boolean) : [];
   });
   const [invoiceInput, setInvoiceInput] = useState("");
+  const [ewayBills, setEwayBills] = useState<string[]>(() => {
+    const val = initialData?.ewayBillNumber || "";
+    return val ? val.split(",").map(s => s.trim()).filter(Boolean) : [];
+  });
+  const [ewayBillInput, setEwayBillInput] = useState("");
   
   const form = useForm<z.infer<typeof vehicleEntrySchema>>({
     resolver: zodResolver(vehicleEntrySchema) as any,
@@ -88,6 +93,11 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
     setValue("invoiceNumber", invoices.join(", "));
   }, [invoices, setValue]);
 
+  // Sync ewayBills array to form field
+  useEffect(() => {
+    setValue("ewayBillNumber", ewayBills.join(", "));
+  }, [ewayBills, setValue]);
+
   // Sync with initialData changes (for when the form is loaded in an edit modal)
   useEffect(() => {
     if (initialData) {
@@ -126,6 +136,8 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       });
       const val = initialData.invoiceNumber || "";
       setInvoices(val ? val.split(",").map(s => s.trim()).filter(Boolean) : []);
+      const ewayVal = initialData.ewayBillNumber || "";
+      setEwayBills(ewayVal ? ewayVal.split(",").map(s => s.trim()).filter(Boolean) : []);
     }
   }, [initialData, form]);
 
@@ -145,6 +157,25 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
     if (e.key === "Enter") {
       e.preventDefault();
       addInvoice();
+    }
+  };
+
+  const addEwayBill = () => {
+    const cleaned = ewayBillInput.trim();
+    if (cleaned && !ewayBills.includes(cleaned)) {
+      setEwayBills([...ewayBills, cleaned]);
+      setEwayBillInput("");
+    }
+  };
+
+  const removeEwayBill = (billToRemove: string) => {
+    setEwayBills(ewayBills.filter(bill => bill !== billToRemove));
+  };
+
+  const handleEwayBillKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addEwayBill();
     }
   };
 
@@ -447,9 +478,48 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 </div>
               </div>
 
-              <div className="grid gap-1.5">
-                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">E-Way Bill Number</Label>
-                <Input {...form.register("ewayBillNumber")} className="font-mono text-zinc-900 dark:text-zinc-100" />
+              {/* Multiple E-Way Bill Input */}
+              <div className="grid gap-1.5 sm:col-span-2">
+                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">E-Way Bill Number(s)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={ewayBillInput}
+                    onChange={(e) => setEwayBillInput(e.target.value)}
+                    onKeyDown={handleEwayBillKeyDown}
+                    placeholder="Type e-way bill no. & press Add"
+                    className="flex-1 font-mono text-zinc-900 dark:text-zinc-100"
+                  />
+                  <Button 
+                    type="button" 
+                    variant="secondary" 
+                    onClick={addEwayBill} 
+                    className="h-8 shrink-0 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-850 dark:text-zinc-200"
+                  >
+                    Add
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-1.5 mt-1.5 max-h-[85px] overflow-y-auto p-2 border border-zinc-200 dark:border-zinc-800 rounded-lg min-h-[38px] bg-zinc-50/50 dark:bg-zinc-900/50">
+                  {ewayBills.length > 0 ? (
+                    ewayBills.map((bill, idx) => (
+                      <Badge 
+                        key={idx} 
+                        variant="secondary" 
+                        className="bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-355 border border-zinc-200/50 dark:border-zinc-750 flex items-center gap-1.5 py-0.5 px-2 rounded-md text-[11px] font-mono font-medium"
+                      >
+                        {bill}
+                        <button
+                          type="button"
+                          onClick={() => removeEwayBill(bill)}
+                          className="text-zinc-400 hover:text-zinc-650 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors focus:outline-none"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-[11px] text-zinc-400 dark:text-zinc-500 italic px-1 self-center">No E-Way Bills added yet</span>
+                  )}
+                </div>
               </div>
 
               <div className="grid gap-1.5">
