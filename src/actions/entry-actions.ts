@@ -112,6 +112,9 @@ export async function getDashboardStats() {
         where: {
           ewayBillValidTill: {
             lt: new Date()
+          },
+          deliveryStatus: {
+            notIn: ["UNLOADED", "CANCELLED"]
           }
         }
       }),
@@ -248,7 +251,9 @@ export async function getExpiringEwayBills() {
           not: null,
           lte: threshold
         },
-        deliveryStatus: "IN_TRANSIT"
+        deliveryStatus: {
+          notIn: ["UNLOADED", "CANCELLED"]
+        }
       },
       orderBy: {
         ewayBillValidTill: "asc"

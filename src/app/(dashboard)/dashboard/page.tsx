@@ -157,7 +157,7 @@ export default async function DashboardPage() {
               <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
               <FileWarning className="w-3.5 h-3.5 text-rose-500" />
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-rose-700 dark:text-rose-400">
-                E-Way Bill Alerts — In-Transit Vehicles ({expiringBills.length})
+                E-Way Bill Alerts — Active Vehicles ({expiringBills.length})
               </span>
             </div>
             <span className="text-[9px] font-semibold text-rose-500/70 dark:text-rose-400/60 italic">
