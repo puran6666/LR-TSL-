@@ -458,6 +458,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                   </p>
                 )}
               </div>
+              </div>
             </CardContent>
           </Card>
         </div>
