@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { createVehicleEntry, updateVehicleEntry } from "@/actions/entry-actions";
 import { vehicleEntrySchema } from "@/lib/schemas";
 import { Broker, VehicleEntry } from "@prisma/client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -238,20 +238,18 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 <div className="flex gap-2 items-center">
                   <div className="flex-1 min-w-0">
                     <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className={cn(
-                          "w-full justify-between font-normal bg-white dark:bg-zinc-950",
-                          !watch("brokerId") && "text-muted-foreground"
-                        )}
-                      >
-                        {watch("brokerId")
-                          ? `${brokers.find((b) => b.id === watch("brokerId"))?.brokerName} (${brokers.find((b) => b.id === watch("brokerId"))?.mobile})`
-                          : "Select broker..."}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
+                    <PopoverTrigger
+                      role="combobox"
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "w-full justify-between font-normal bg-white dark:bg-zinc-950",
+                        !watch("brokerId") && "text-muted-foreground"
+                      )}
+                    >
+                      {watch("brokerId")
+                        ? `${brokers.find((b) => b.id === watch("brokerId"))?.brokerName} (${brokers.find((b) => b.id === watch("brokerId"))?.mobile})`
+                        : "Select broker..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </PopoverTrigger>
                     <PopoverContent className="w-[300px] p-0" align="start">
                       <Command>
