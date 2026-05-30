@@ -26,13 +26,18 @@ export default async function DashboardPage() {
     expiredEwayBills: 0,
     totalVehiclesBooked: 0,
     totalOutstanding: 0,
-    waitingForUnloading: 0
+    waitingForUnloading: 0,
+    expressVehicles: 0
   };
 
   const expiringBills = expiringResult.success ? expiringResult.data || [] : [];
   const brokers = brokersResult.success ? brokersResult.data || [] : [];
   const recentEntries = recentResult.success ? recentResult.data || [] : [];
   const inTransitEntries = inTransitResult.success ? inTransitResult.data || [] : [];
+  
+  const actualInTransit = inTransitEntries.filter(e => e.deliveryStatus === "IN_TRANSIT");
+  const actualWaiting = inTransitEntries.filter(e => e.deliveryStatus === "WAITING_FOR_UNLOADING");
+
   const userId = session?.user?.id || "admin-bypass";
 
   return (
@@ -51,7 +56,7 @@ export default async function DashboardPage() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {/* Card 1: Total Vehicles Today */}
         <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
@@ -82,9 +87,23 @@ export default async function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="text-2xl font-extrabold tracking-tight text-blue-600 dark:text-blue-400">{inTransitEntries.length}</div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
-              <span>Active shipments on road</span>
+            <div className="text-2xl font-extrabold tracking-tight text-blue-600 dark:text-blue-400">{actualInTransit.length}</div>
+            <div className="flex flex-col mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium relative z-10">
+              <span className="mb-1">Active shipments on road</span>
+              <details className="group mt-0.5">
+                <summary className="cursor-pointer text-blue-500 hover:text-blue-600 dark:text-blue-450 dark:hover:text-blue-400 font-semibold list-none select-none inline-flex items-center gap-1">
+                  View Recent 10 <span className="text-[8px] opacity-70 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div className="absolute top-full left-0 w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-lg mt-1 z-50 max-h-[160px] overflow-y-auto p-1.5 space-y-1">
+                  {actualInTransit.slice(0, 10).map(v => (
+                    <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
+                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400">{v.toDestination || "-"}</span>
+                    </div>
+                  ))}
+                  {actualInTransit.length === 0 && <span className="italic text-[9px] px-1 text-zinc-400">No vehicles in transit</span>}
+                </div>
+              </details>
             </div>
           </CardContent>
         </Card>
@@ -100,31 +119,44 @@ export default async function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="text-2xl font-extrabold tracking-tight text-amber-600 dark:text-amber-400">{stats.waitingForUnloading || 0}</div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
-              <span>Vehicles at destination</span>
+            <div className="text-2xl font-extrabold tracking-tight text-amber-600 dark:text-amber-400">{actualWaiting.length}</div>
+            <div className="flex flex-col mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium relative z-10">
+              <span className="mb-1">Vehicles at destination</span>
+              <details className="group mt-0.5">
+                <summary className="cursor-pointer text-amber-500 hover:text-amber-600 dark:text-amber-450 dark:hover:text-amber-400 font-semibold list-none select-none inline-flex items-center gap-1">
+                  View Recent 10 <span className="text-[8px] opacity-70 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div className="absolute top-full left-0 w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-lg mt-1 z-50 max-h-[160px] overflow-y-auto p-1.5 space-y-1">
+                  {actualWaiting.slice(0, 10).map(v => (
+                    <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
+                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400">{v.toDestination || "-"}</span>
+                    </div>
+                  ))}
+                  {actualWaiting.length === 0 && <span className="italic text-[9px] px-1 text-zinc-400">No vehicles waiting</span>}
+                </div>
+              </details>
             </div>
           </CardContent>
         </Card>
 
-<Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
-  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
-    <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-      Expired E-way Bills
-    </CardTitle>
-    <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
-      <AlertTriangle className="h-4 w-4" />
-    </div>
-  </CardHeader>
-  <CardContent className="p-4 pt-0">
-    <div className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400">{stats.expiredEwayBills}</div>
-    <div className="flex items-center gap-1 mt-1 text-[10px] text-rose-600 dark:text-rose-400 font-semibold animate-pulse">
-      <span>Requires immediate extension</span>
-    </div>
-  </CardContent>
-</Card>
-
-
+        {/* Card 4: Expired E-way Bills */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              Expired E-way Bills
+            </CardTitle>
+            <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
+              <AlertTriangle className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400">{stats.expiredEwayBills}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-rose-600 dark:text-rose-400 font-semibold animate-pulse">
+              <span>Requires immediate extension</span>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Card 5: Total Vehicles Booked */}
         <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
@@ -132,21 +164,36 @@ export default async function DashboardPage() {
             <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
               Total Vehicles Booked
             </CardTitle>
-            <div className="p-1 rounded-md bg-indigo-500/[0.04] text-indigo-600 dark:text-indigo-450 border border-indigo-500/10">
-              <CalendarClock className="h-4 w-4" />
+            <div className="p-1 rounded-md bg-emerald-500/[0.04] text-emerald-600 dark:text-emerald-450 border border-emerald-500/10">
+              <CheckCircle className="h-4 w-4" />
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="text-2xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400">{stats.totalVehiclesBooked}</div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
-              <span>Total vehicles ever booked</span>
+            <div className="text-2xl font-extrabold tracking-tight text-emerald-600 dark:text-emerald-400">{stats.totalVehiclesBooked}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-emerald-600 dark:text-emerald-500 font-semibold">
+              <span>Overall dispatch history</span>
             </div>
           </CardContent>
         </Card>
 
-
-
-        </div>
+        {/* Card 6: Express Mode Vehicles */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              Express Mode Vehicles
+            </CardTitle>
+            <div className="p-1 rounded-md bg-purple-500/[0.04] text-purple-600 dark:text-purple-450 border border-purple-500/10">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-purple-600 dark:text-purple-400">{stats.expressVehicles || 0}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-purple-600 dark:text-purple-500 font-semibold">
+              <span>Active urgent shipments</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* E-Way Bill Expiry Alerts — IN_TRANSIT only, auto-hidden once extended or unloaded */}
       {expiringBills.length > 0 && (
@@ -318,6 +365,7 @@ export default async function DashboardPage() {
                   <tr className="bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-250/30 dark:border-zinc-800/40 text-zinc-450 font-bold uppercase text-[9px] tracking-wider h-11">
                     <th className="px-4 font-semibold">Vehicle / Date</th>
                     <th className="px-4 font-semibold">Route</th>
+                    <th className="px-4 font-semibold">Delivery Status</th>
                     <th className="px-4 font-semibold">E-Way Bill Status</th>
                     <th className="px-4 font-semibold">Broker</th>
                     <th className="px-4 font-semibold text-center">Actions</th>
@@ -360,6 +408,17 @@ export default async function DashboardPage() {
                               <span className="font-semibold text-zinc-700 dark:text-zinc-300">{entry.fromLocation}</span>
                               <span className="text-[10px] text-zinc-450 dark:text-zinc-500">to {entry.toDestination}</span>
                             </div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <Badge variant="outline" className={`text-[9px] py-0 px-2 font-bold shadow-none rounded-md uppercase tracking-wider ${
+                              entry.deliveryStatus === 'UNLOADED' 
+                                ? 'bg-emerald-500/[0.04] border-emerald-500/15 text-emerald-600 dark:text-emerald-450' 
+                                : entry.deliveryStatus === 'WAITING_FOR_UNLOADING'
+                                ? 'bg-amber-500/[0.04] border-amber-500/15 text-amber-600 dark:text-amber-450'
+                                : 'bg-blue-500/[0.04] border-blue-500/15 text-blue-600 dark:text-blue-450'
+                            }`}>
+                              {entry.deliveryStatus.replace(/_/g, ' ')}
+                            </Badge>
                           </td>
                           <td className="py-3.5 px-4">
                             {entry.ewayBillNumber ? (

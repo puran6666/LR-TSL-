@@ -74,7 +74,16 @@ export async function getDashboardStats() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [totalVehiclesToday, pendingBalance, deliveredVehicles, expiredEwayBills, totalVehiclesBooked, totalOutstanding, waitingForUnloading] = await Promise.all([
+    const [
+      totalVehiclesToday, 
+      pendingBalance, 
+      deliveredVehicles, 
+      expiredEwayBills, 
+      totalVehiclesBooked, 
+      totalOutstanding, 
+      waitingForUnloading,
+      expressVehicles
+    ] = await Promise.all([
       prisma.vehicleEntry.count({
         where: {
           entryDate: {
@@ -119,6 +128,15 @@ export async function getDashboardStats() {
         where: {
           deliveryStatus: 'WAITING_FOR_UNLOADING'
         }
+      }),
+      // Express mode vehicles
+      prisma.vehicleEntry.count({
+        where: {
+          mode: 'EXPRESS',
+          deliveryStatus: {
+            notIn: ['UNLOADED', 'DELIVERED', 'CANCELLED']
+          }
+        }
       })
     ]);
 
@@ -132,6 +150,7 @@ export async function getDashboardStats() {
         totalVehiclesBooked,
         totalOutstanding: totalOutstanding._sum.freightAmount || 0,
         waitingForUnloading,
+        expressVehicles,
       }
     };
 
