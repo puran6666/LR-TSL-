@@ -23,14 +23,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
-import { X, Search, Calendar, CalendarDays, Filter } from "lucide-react";
+import { X, Search, Calendar, CalendarDays, Filter, CalendarIcon, ChevronRight } from "lucide-react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,6 +48,8 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [timeframe, setTimeframe] = useState("all");
+  const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const filteredData = useMemo(() => {
     return data.filter((item: any) => {
@@ -56,6 +59,10 @@ export function DataTable<TData, TValue>({
       if (isNaN(itemDateObj.getTime())) return true;
       
       const now = new Date();
+      
+      if (timeframe === "custom_date" && dateFilter) {
+        return itemDateObj.toDateString() === dateFilter.toDateString();
+      }
       
       if (timeframe === "today") {
         return itemDateObj.toDateString() === now.toDateString();
@@ -79,7 +86,7 @@ export function DataTable<TData, TValue>({
 
       return true;
     });
-  }, [data, timeframe]);
+  }, [data, timeframe, dateFilter]);
 
   const table = useReactTable({
     data: filteredData,
@@ -119,22 +126,72 @@ export function DataTable<TData, TValue>({
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          <Select value={timeframe} onValueChange={(v) => setTimeframe(v || "all")}>
-            <SelectTrigger className="w-[160px] bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm h-9 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-              <div className="flex items-center gap-2">
-                <Filter className="w-3.5 h-3.5 text-zinc-500" />
-                <SelectValue placeholder="Timeframe" />
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[220px] justify-start text-left font-semibold text-xs h-9 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm",
+                  timeframe !== "all" && "text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {timeframe === "all" ? "All Time" : 
+                 timeframe === "today" ? "Today" :
+                 timeframe === "yesterday" ? "Yesterday" :
+                 timeframe === "this_month" ? "This Month" :
+                 timeframe === "last_month" ? "Last Month" :
+                 timeframe === "this_year" ? "This Year" :
+                 timeframe === "custom_date" && dateFilter ? format(dateFilter, "PPP") : 
+                 "Filter by Date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 flex flex-col md:flex-row bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl overflow-hidden" align="end">
+              <div className="flex flex-col gap-1 p-3 border-b md:border-b-0 md:border-r border-zinc-100 dark:border-zinc-900 w-full md:w-[150px] bg-zinc-50/50 dark:bg-zinc-900/20">
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1 px-2">Presets</span>
+                {[
+                  { id: "all", label: "All Time" },
+                  { id: "today", label: "Today" },
+                  { id: "yesterday", label: "Yesterday" },
+                  { id: "this_month", label: "This Month" },
+                  { id: "last_month", label: "Last Month" },
+                  { id: "this_year", label: "This Year" }
+                ].map((preset) => (
+                  <Button
+                    key={preset.id}
+                    variant={timeframe === preset.id ? "secondary" : "ghost"}
+                    className={cn(
+                      "justify-start h-8 text-xs font-semibold px-2 w-full",
+                      timeframe === preset.id ? "bg-purple-100/50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400" : "text-zinc-600 dark:text-zinc-400"
+                    )}
+                    onClick={() => {
+                      setTimeframe(preset.id);
+                      setDateFilter(undefined);
+                      setIsPopoverOpen(false);
+                    }}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
               </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Time</SelectItem>
-              <SelectItem value="today">Today</SelectItem>
-              <SelectItem value="yesterday">Yesterday</SelectItem>
-              <SelectItem value="this_month">This Month</SelectItem>
-              <SelectItem value="last_month">Last Month</SelectItem>
-              <SelectItem value="this_year">This Year</SelectItem>
-            </SelectContent>
-          </Select>
+              <div className="p-3">
+                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-2 block px-1">Specific Date</span>
+                <CalendarComponent
+                  mode="single"
+                  selected={dateFilter}
+                  onSelect={(date) => {
+                    if (date) {
+                      setDateFilter(date);
+                      setTimeframe("custom_date");
+                      setIsPopoverOpen(false);
+                    }
+                  }}
+                  initialFocus
+                  className="p-0"
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {(globalFilter || timeframe !== "all") && (
             <Button
