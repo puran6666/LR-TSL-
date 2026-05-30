@@ -69,7 +69,7 @@ export const columns: ColumnDef<VehicleEntry>[] = [
   {
     id: "route",
     header: "Route",
-    accessorFn: (row) => `${row.fromLocation} to ${row.toDestination}`,
+    accessorFn: (row) => `${row.fromLocation} to ${row.toDestination} ${row.pickupCompany || ''} ${row.deliveryCompany || ''}`,
     cell: ({ row }) => (
       <div className="flex flex-col gap-0.5 text-xs">
         <span className="font-semibold text-zinc-700 dark:text-zinc-300">{row.original.fromLocation}</span>
