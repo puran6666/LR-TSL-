@@ -54,6 +54,7 @@ model VehicleEntry {
   distance          Float?
   
   freightAmount     Float
+  billingAmount     Float?   @default(0)
   advancePaid       Float
   hamaliCharges     Float    @default(0)
   detentionCharges  Float    @default(0)

@@ -50,6 +50,14 @@ export async function createVehicleEntry(formData: z.infer<typeof vehicleEntrySc
       return { success: false, error: "LR Number already exists" };
     }
 
+    // Ensure brokerName is populated correctly from the DB
+    const broker = await prisma.broker.findUnique({
+      where: { id: validatedData.brokerId }
+    });
+    if (broker) {
+      validatedData.brokerName = broker.brokerName;
+    }
+
     const entry = await prisma.vehicleEntry.create({
       data: {
         ...validatedData,
@@ -146,6 +154,14 @@ export async function updateVehicleEntry(id: string, formData: z.infer<typeof ve
     
     if (existingLr) {
       return { success: false, error: "LR Number already exists on another entry" };
+    }
+
+    // Ensure brokerName is populated correctly from the DB
+    const broker = await prisma.broker.findUnique({
+      where: { id: validatedData.brokerId }
+    });
+    if (broker) {
+      validatedData.brokerName = broker.brokerName;
     }
 
     const entry = await prisma.vehicleEntry.update({

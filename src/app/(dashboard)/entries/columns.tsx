@@ -36,9 +36,9 @@ export const columns: ColumnDef<VehicleEntry>[] = [
   {
     id: "broker",
     header: "Broker",
-    accessorFn: (row) => `${row.brokerName} ${(row as any).broker?.mobile || ""}`,
+    accessorFn: (row) => `${(row as any).broker?.brokerName || row.brokerName || ""} ${(row as any).broker?.mobile || ""}`,
     cell: ({ row }) => {
-      const name = row.original.brokerName;
+      const name = (row.original as any).broker?.brokerName || row.original.brokerName;
       const brokerMobile = (row.original as any).broker?.mobile;
       return (
         <div className="flex items-center gap-2">

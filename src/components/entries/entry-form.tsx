@@ -10,12 +10,16 @@ import { vehicleEntrySchema } from "@/lib/schemas";
 import { Broker, VehicleEntry } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Save, Plus, X } from "lucide-react";
+import { Save, Plus, X, Check, ChevronsUpDown, Truck, FileText, IndianRupee } from "lucide-react";
 import { AddBrokerDialog } from "@/components/brokers/add-broker-dialog";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface EntryFormProps {
   brokers: Broker[];
@@ -60,6 +64,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       invoiceNumber: initialData?.invoiceNumber || "",
       packageCount: initialData?.packageCount || 1,
       freightAmount: initialData?.freightAmount || 0,
+      billingAmount: (initialData as any)?.billingAmount || 0,
       advancePaid: initialData?.advancePaid || 0,
       hamaliCharges: initialData?.hamaliCharges || 0,
       detentionCharges: initialData?.detentionCharges || 0,
@@ -104,6 +109,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
         invoiceNumber: initialData.invoiceNumber,
         packageCount: initialData.packageCount,
         freightAmount: initialData.freightAmount,
+        billingAmount: (initialData as any).billingAmount || 0,
         advancePaid: initialData.advancePaid,
         hamaliCharges: initialData.hamaliCharges,
         detentionCharges: initialData.detentionCharges,
@@ -203,13 +209,20 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
         <div className="lg:col-span-7 space-y-8">
           
           {/* Basic Details */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-zinc-150 dark:border-zinc-800">
-              <div className="h-1.5 w-3 rounded-full bg-zinc-400 dark:bg-zinc-650" />
-              <h3 className="text-xs uppercase font-extrabold tracking-wider text-zinc-550 dark:text-zinc-405">Basic Details</h3>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card className="shadow-sm border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <CardHeader className="bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  <Truck className="h-4 w-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-sm uppercase font-extrabold tracking-wider text-zinc-800 dark:text-zinc-200">Dispatch & Vehicle Details</CardTitle>
+                  <CardDescription className="text-xs mt-0.5">Primary information for the vehicle dispatch</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Vehicle Number *</Label>
                 <Input {...form.register("vehicleNumber")} className="uppercase font-semibold tracking-wider text-zinc-950 dark:text-zinc-50" />
@@ -224,20 +237,50 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Broker *</Label>
                 <div className="flex gap-2 items-center">
                   <div className="flex-1 min-w-0">
-                    <Select 
-                      value={watch("brokerId")} 
-                      onValueChange={(val) => setValue("brokerId", val as string)}
-                      items={selectItems}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select broker" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brokers.map((b) => (
-                          <SelectItem key={b.id} value={b.id}>{b.brokerName} ({b.mobile})</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-full justify-between font-normal bg-white dark:bg-zinc-950",
+                          !watch("brokerId") && "text-muted-foreground"
+                        )}
+                      >
+                        {watch("brokerId")
+                          ? `${brokers.find((b) => b.id === watch("brokerId"))?.brokerName} (${brokers.find((b) => b.id === watch("brokerId"))?.mobile})`
+                          : "Select broker..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[300px] p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search broker name or mobile..." />
+                        <CommandList>
+                          <CommandEmpty>No broker found.</CommandEmpty>
+                          <CommandGroup>
+                            {brokers.map((b) => (
+                              <CommandItem
+                                key={b.id}
+                                value={`${b.brokerName} ${b.mobile} ${b.id}`}
+                                onSelect={() => {
+                                  setValue("brokerId", b.id);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    b.id === watch("brokerId") ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {b.brokerName} ({b.mobile})
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   </div>
                   <AddBrokerDialog 
                     onSuccess={(id) => {
@@ -316,15 +359,24 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 </Select>
               </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
           {/* Document Details */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-zinc-150 dark:border-zinc-800">
-              <div className="h-1.5 w-3 rounded-full bg-zinc-400 dark:bg-zinc-650" />
-              <h3 className="text-xs uppercase font-extrabold tracking-wider text-zinc-550 dark:text-zinc-405">Document Details</h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Card className="shadow-sm border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+            <CardHeader className="bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-sm uppercase font-extrabold tracking-wider text-zinc-800 dark:text-zinc-200">Cargo & Documents</CardTitle>
+                  <CardDescription className="text-xs mt-0.5">E-way bills, invoice numbers, and cargo details</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">LR Number *</Label>
                 <Input {...form.register("lrNumber")} className="font-mono font-semibold text-zinc-950 dark:text-zinc-50" />
@@ -406,20 +458,33 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                   </p>
                 )}
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Right Side: Financial Ledger & Notes (Takes 5/12 cols) */}
-        <div className="lg:col-span-5 space-y-6 bg-zinc-50/50 dark:bg-zinc-900/10 border border-zinc-200/70 dark:border-zinc-800/80 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center gap-2 pb-2 border-b border-zinc-150 dark:border-zinc-800">
-            <div className="h-1.5 w-3 rounded-full bg-zinc-450 dark:bg-zinc-600" />
-            <h3 className="text-xs uppercase font-extrabold tracking-wider text-zinc-550 dark:text-zinc-405">Payment Ledger</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="lg:col-span-5 space-y-6">
+          <Card className="shadow-sm border-zinc-200/80 dark:border-zinc-800 rounded-xl overflow-hidden bg-gradient-to-br from-white to-zinc-50/50 dark:from-zinc-950 dark:to-zinc-900/20">
+            <CardHeader className="bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                  <IndianRupee className="h-4 w-4" />
+                </div>
+                <div>
+                  <CardTitle className="text-sm uppercase font-extrabold tracking-wider text-zinc-800 dark:text-zinc-200">Payment Ledger</CardTitle>
+                  <CardDescription className="text-xs mt-0.5">Billing, Broker, and advance amounts</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid gap-1.5 sm:col-span-2 border-b border-dashed border-zinc-200 dark:border-zinc-800 pb-4 mb-2">
+              <Label className="text-zinc-700 dark:text-zinc-300 font-bold">Total Freight Charge (Billing Amount) ₹</Label>
+              <Input {...form.register("billingAmount", { valueAsNumber: true })} type="number" className="font-bold text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-900/10" placeholder="Amount to bill the company" />
+            </div>
+
             <div className="grid gap-1.5">
-              <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Freight Amount (₹)</Label>
+              <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Broker Amount (₹)</Label>
               <Input {...form.register("freightAmount", { valueAsNumber: true })} type="number" className="font-semibold text-zinc-900 dark:text-zinc-100" />
             </div>
             <div className="grid gap-1.5">
@@ -452,14 +517,16 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
               <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Remarks / Notes</Label>
               <Input {...form.register("remarks")} placeholder="Enter any extra details, remarks..." className="w-full text-zinc-900 dark:text-zinc-100" />
             </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      <div className="flex justify-end pt-4 border-t border-zinc-150 dark:border-zinc-800">
-        <Button type="button" variant="outline" className="mr-3" onClick={() => router.back()}>Cancel</Button>
-        <Button type="submit" disabled={isLoading} className="bg-zinc-900 hover:bg-zinc-850 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-900">
-          {isLoading ? "Saving..." : <><Save className="w-4 h-4 mr-2" /> Save Entry</>}
+      <div className="flex justify-end pt-5 border-t border-zinc-150 dark:border-zinc-800">
+        <Button type="button" variant="ghost" className="mr-3 hover:bg-zinc-100 dark:hover:bg-zinc-900" onClick={() => router.back()}>Cancel</Button>
+        <Button type="submit" disabled={isLoading} className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-500/20 px-8 rounded-lg font-bold">
+          {isLoading ? "Saving..." : <><Save className="w-4 h-4 mr-2" /> {initialData ? "Update Entry" : "Save Entry"}</>}
         </Button>
       </div>
     </form>

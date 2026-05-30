@@ -146,7 +146,7 @@ export default async function DashboardPage() {
         <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
             <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              Freight Amount
+              Broker Amount
             </CardTitle>
             <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
               <IndianRupee className="h-4 w-4" />
@@ -409,11 +409,11 @@ export default async function DashboardPage() {
                           <td className="py-3.5 px-4">
                             <div className="flex items-center gap-2">
                               <div className="h-6 w-6 rounded-md bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 flex items-center justify-center text-[10px] font-bold border border-zinc-200/50 dark:border-zinc-800/50 shrink-0">
-                                {entry.brokerName ? entry.brokerName.charAt(0).toUpperCase() : "B"}
+                                {((entry as any).broker?.brokerName || entry.brokerName) ? ((entry as any).broker?.brokerName || entry.brokerName).charAt(0).toUpperCase() : "B"}
                               </div>
                               <div className="flex flex-col">
-                                <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs truncate max-w-[120px]" title={entry.brokerName || ""}>
-                                  {entry.brokerName || "N/A"}
+                                <span className="font-semibold text-zinc-800 dark:text-zinc-200 text-xs truncate max-w-[120px]" title={(entry as any).broker?.brokerName || entry.brokerName || ""}>
+                                  {(entry as any).broker?.brokerName || entry.brokerName || "N/A"}
                                 </span>
                                 {(entry as any).broker?.mobile && (
                                   <span className="text-[10px] font-mono text-zinc-400 dark:text-zinc-500 mt-0.5">

@@ -35,6 +35,12 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
     maximumFractionDigits: 0,
   }).format(entry.freightAmount);
 
+  const formattedBilling = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format((entry as any).billingAmount || 0);
+
   const formattedDetention = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
@@ -229,8 +235,14 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                 <IndianRupee className="h-3.5 w-3.5" /> Financial Ledger
               </h4>
               <div className="space-y-3 text-sm">
+                {(entry as any).billingAmount > 0 && (
+                  <div className="flex justify-between items-center text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg mb-2">
+                    <span>Total Billing Amount:</span>
+                    <span>{formattedBilling}</span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center text-zinc-600 dark:text-zinc-400">
-                  <span>Base Freight Amount:</span>
+                  <span>Broker Amount:</span>
                   <span className="font-semibold text-zinc-800 dark:text-zinc-100">{formattedFreight}</span>
                 </div>
                 <div className="flex justify-between items-center text-zinc-600 dark:text-zinc-400">

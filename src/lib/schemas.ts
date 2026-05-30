@@ -24,6 +24,7 @@ export const vehicleEntrySchema = z.object({
   distance: z.preprocess((val) => (val === "" || val === null || val === undefined ? null : Number(val)), z.number().min(0).optional().nullable()),
   
   freightAmount: z.number().min(0),
+  billingAmount: z.number().min(0).default(0).optional(),
   advancePaid: z.number().min(0),
   hamaliCharges: z.number().min(0).default(0),
   detentionCharges: z.number().min(0).default(0),
