@@ -192,16 +192,14 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     },
   },
   {
-    accessorKey: "balancePaid",
+    accessorKey: "advancePaid",
     header: "Advance Paid",
     cell: ({ row }) => {
-      const paid = parseFloat(row.getValue("balancePaid")) || 0;
-      const date = row.original.balancePaidDate ? format(new Date(row.original.balancePaidDate), "dd MMM yyyy") : null;
+      const paid = parseFloat(row.getValue("advancePaid")) || 0;
       const formatted = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(paid);
       return (
         <div className="flex flex-col gap-0.5">
           <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{formatted}</span>
-          {date && <span className="text-[9px] text-zinc-500 dark:text-zinc-400">{date}</span>}
         </div>
       );
     },
