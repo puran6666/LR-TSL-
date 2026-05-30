@@ -119,7 +119,7 @@ export function DataTable<TData, TValue>({
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          <Select value={timeframe} onValueChange={setTimeframe}>
+          <Select value={timeframe} onValueChange={(v) => setTimeframe(v || "all")}>
             <SelectTrigger className="w-[160px] bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm h-9 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
               <div className="flex items-center gap-2">
                 <Filter className="w-3.5 h-3.5 text-zinc-500" />
