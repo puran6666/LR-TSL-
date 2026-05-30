@@ -11,6 +11,8 @@ import { ViewEntryDialog } from "@/components/entries/view-entry-dialog";
 import { DeleteEntryDialog } from "@/components/entries/delete-entry-dialog";
 import { format, differenceInHours, differenceInDays } from "date-fns";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const session = await auth();
   const statsResult = await getDashboardStats();

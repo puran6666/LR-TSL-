@@ -56,6 +56,7 @@ export async function createVehicleEntry(formData: z.infer<typeof vehicleEntrySc
     });
     try {
       revalidatePath("/entries");
+      revalidatePath("/dashboard");
     } catch(e) {
       console.log("revalidate error", e);
     }
