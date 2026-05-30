@@ -37,6 +37,7 @@ export default async function DashboardPage() {
   
   const actualInTransit = inTransitEntries.filter(e => e.deliveryStatus === "IN_TRANSIT");
   const actualWaiting = inTransitEntries.filter(e => e.deliveryStatus === "WAITING_FOR_UNLOADING");
+  const actualExpress = inTransitEntries.filter(e => (e as any).mode === "EXPRESS" && !["DELIVERED", "CANCELLED"].includes(e.deliveryStatus));
 
   const userId = session?.user?.id || "admin-bypass";
 
@@ -187,9 +188,23 @@ export default async function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="text-2xl font-extrabold tracking-tight text-purple-600 dark:text-purple-400">{stats.expressVehicles || 0}</div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-purple-600 dark:text-purple-500 font-semibold">
-              <span>Active urgent shipments</span>
+            <div className="text-2xl font-extrabold tracking-tight text-purple-600 dark:text-purple-400">{actualExpress.length}</div>
+            <div className="flex flex-col mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium relative z-10">
+              <span className="mb-1">Active urgent shipments</span>
+              <details className="group mt-0.5">
+                <summary className="cursor-pointer text-purple-500 hover:text-purple-600 dark:text-purple-450 dark:hover:text-purple-400 font-semibold list-none select-none inline-flex items-center gap-1">
+                  View Recent 10 <span className="text-[8px] opacity-70 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <div className="mt-2 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg max-h-[160px] overflow-y-auto p-1.5 space-y-1">
+                  {actualExpress.slice(0, 10).map(v => (
+                    <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
+                      <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
+                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400">{v.toDestination || "-"}</span>
+                    </div>
+                  ))}
+                  {actualExpress.length === 0 && <span className="italic text-[9px] px-1 text-zinc-400">No express vehicles</span>}
+                </div>
+              </details>
             </div>
           </CardContent>
         </Card>
