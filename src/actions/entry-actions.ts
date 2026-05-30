@@ -23,17 +23,7 @@ export async function createVehicleEntry(formData: z.infer<typeof vehicleEntrySc
   try {
     const validatedData = vehicleEntrySchema.parse(formData);
 
-    // ---- Automatic E-Way Bill validity calculation ----
-    // Rule: 100 km = 1 day of validity. Round up to the next full day.
-    // If distance is provided, compute validity period and set ewayBillValidTill.
-    if (validatedData.distance != null && validatedData.distance > 0) {
-      const validityDays = Math.ceil(validatedData.distance / 100);
-      const now = new Date();
-      // Preserve the time of generation for the expiry date.
-      const expiry = new Date(now.getTime() + validityDays * 24 * 60 * 60 * 1000);
-      validatedData.ewayBillValidTill = expiry;
-    }
-    // ---------------------------------------------------
+
 
       // ---- Calculate balance without hamali charges ----
       const freight = validatedData.freightAmount ?? 0;

@@ -190,18 +190,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
     setValue("balanceAmount", balance);
   }, [freight, advance, hamali, detention, setValue]);
 
-  // Auto calculate E-Way Bill validity (100 km per day)
-  const entryDate = watch("entryDate");
-  const distance = watch("distance");
 
-  useEffect(() => {
-    if (entryDate && distance && Number(distance) > 0) {
-      const daysOfValidity = Math.ceil(Number(distance) / 100);
-      const expiryDate = new Date(entryDate);
-      expiryDate.setDate(expiryDate.getDate() + (daysOfValidity - 1));
-      setValue("ewayBillValidTill", formatDateForInput(expiryDate) as any);
-    }
-  }, [entryDate, distance, setValue]);
 
   async function onSubmit(values: z.infer<typeof vehicleEntrySchema>) {
     setIsLoading(true);
