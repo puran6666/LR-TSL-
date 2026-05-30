@@ -19,9 +19,16 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     accessorFn: (row) => `${row.vehicleNumber} ${format(new Date(row.entryDate), "dd MMM yyyy")} ${row.loadingDate ? format(new Date(row.loadingDate), "dd MMM yyyy") : ""}`,
     cell: ({ row }) => (
       <div className="flex flex-col gap-0.5 min-w-[100px]">
-        <span className="font-bold uppercase text-zinc-900 dark:text-zinc-50 text-xs tracking-wider">
-          {row.original.vehicleNumber}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="font-bold uppercase text-zinc-900 dark:text-zinc-50 text-xs tracking-wider">
+            {row.original.vehicleNumber}
+          </span>
+          {(row.original as any).previousVehicleNumber && (
+            <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold" title="Previous Vehicle Number">
+              {(row.original as any).previousVehicleNumber}
+            </span>
+          )}
+        </div>
         <div className="flex flex-col gap-0.5 text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
           <span>Rep: {format(new Date(row.original.entryDate), "dd MMM yyyy")}</span>
           {row.original.loadingDate && (
@@ -219,7 +226,8 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     cell: ({ row }) => {
       const status = row.getValue("deliveryStatus") as string;
       const mode = (row.original as any).mode as string;
-      const isDelivered = status === "DELIVERED";
+      const isUnloaded = status === "UNLOADED";
+      const isWaitingForUnloading = status === "WAITING_FOR_UNLOADING";
       const isDelayed = status === "DELAYED";
       return (
         <div className="flex flex-col gap-1 items-start">
@@ -227,14 +235,16 @@ export const columns: ColumnDef<VehicleEntry>[] = [
             variant="outline"
             className={cn(
               "text-[9px] py-0.5 px-2 font-semibold tracking-wide rounded-md shadow-none",
-              isDelivered 
+              isUnloaded 
                 ? "bg-zinc-100 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200" 
+                : isWaitingForUnloading
+                ? "bg-amber-500/[0.04] border-amber-500/10 text-amber-600 dark:text-amber-400"
                 : isDelayed
                 ? "bg-rose-500/[0.04] border-rose-500/10 text-rose-600 dark:text-rose-400"
                 : "bg-zinc-50 dark:bg-zinc-950 border-zinc-100 dark:border-zinc-900 text-zinc-500 dark:text-zinc-400"
             )}
           >
-            {status.replace("_", " ")}
+            {status.replace(/_/g, " ")}
           </Badge>
           {mode === "EXPRESS" && (
             <Badge variant="outline" className="text-[8px] py-0 px-1.5 bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 uppercase shadow-none font-bold">

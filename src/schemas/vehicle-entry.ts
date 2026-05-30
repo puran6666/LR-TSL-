@@ -3,6 +3,7 @@ import { z } from "zod";
 export const vehicleEntrySchema = z.object({
   entryDate: z.date(),
   vehicleNumber: z.string().min(1, "Vehicle number is required"),
+  previousVehicleNumber: z.string().optional().nullable(),
   brokerId: z.string().min(1, "Broker is required"),
   brokerName: z.string(),
   driverName: z.string().min(1, "Driver name is required"),
@@ -30,6 +31,6 @@ export const vehicleEntrySchema = z.object({
   balancePaid: z.number().min(0).default(0),
   balancePaidDate: z.date().optional().nullable(),
   
-  deliveryStatus: z.enum(["IN_TRANSIT", "DELIVERED", "CANCELLED"]).default("IN_TRANSIT"),
+  deliveryStatus: z.enum(["IN_TRANSIT", "WAITING_FOR_UNLOADING", "UNLOADED", "CANCELLED"]).default("IN_TRANSIT"),
   remarks: z.string().optional(),
 });

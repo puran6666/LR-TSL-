@@ -25,7 +25,8 @@ export default async function DashboardPage() {
     deliveredVehicles: 0,
     expiredEwayBills: 0,
     totalVehiclesBooked: 0,
-    totalOutstanding: 0
+    totalOutstanding: 0,
+    waitingForUnloading: 0
   };
 
   const expiringBills = expiringResult.success ? expiringResult.data || [] : [];
@@ -50,7 +51,7 @@ export default async function DashboardPage() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {/* Card 1: Total Vehicles Today */}
         <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
@@ -84,6 +85,24 @@ export default async function DashboardPage() {
             <div className="text-2xl font-extrabold tracking-tight text-blue-600 dark:text-blue-400">{inTransitEntries.length}</div>
             <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
               <span>Active shipments on road</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 3: Waiting For Unloading */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              Waiting For Unloading
+            </CardTitle>
+            <div className="p-1 rounded-md bg-amber-500/[0.04] text-amber-600 dark:text-amber-450 border border-amber-500/10">
+              <CheckCircle className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-amber-600 dark:text-amber-400">{stats.waitingForUnloading || 0}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
+              <span>Vehicles at destination</span>
             </div>
           </CardContent>
         </Card>
@@ -129,7 +148,7 @@ export default async function DashboardPage() {
 
         </div>
 
-      {/* E-Way Bill Expiry Alerts — IN_TRANSIT only, auto-hidden once extended or delivered */}
+      {/* E-Way Bill Expiry Alerts — IN_TRANSIT only, auto-hidden once extended or unloaded */}
       {expiringBills.length > 0 && (
         <div className="border border-rose-500/15 dark:border-rose-500/10 rounded-xl overflow-hidden">
           {/* Header */}
@@ -142,7 +161,7 @@ export default async function DashboardPage() {
               </span>
             </div>
             <span className="text-[9px] font-semibold text-rose-500/70 dark:text-rose-400/60 italic">
-              Auto-clears once extended or delivered
+              Auto-clears once extended or unloaded
             </span>
           </div>
 

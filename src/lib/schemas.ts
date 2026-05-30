@@ -4,6 +4,7 @@ export const vehicleEntrySchema = z.object({
   entryDate: z.date(),
   loadingDate: z.preprocess((val) => (val === "" || val === null || val === undefined ? null : typeof val === "string" ? new Date(val) : val), z.date().optional().nullable()),
   vehicleNumber: z.string().min(1, "Vehicle number is required"),
+  previousVehicleNumber: z.string().optional().nullable(),
   brokerId: z.string().min(1, "Broker is required"),
   brokerName: z.string(),
   driverName: z.string().min(1, "Driver name is required"),
@@ -32,7 +33,7 @@ export const vehicleEntrySchema = z.object({
   balancePaid: z.number().min(0).default(0),
   balancePaidDate: z.preprocess((val) => (val === "" || val === null || val === undefined ? null : typeof val === "string" ? new Date(val) : val), z.date().optional().nullable()),
   
-  deliveryStatus: z.enum(["IN_TRANSIT", "DELIVERED", "CANCELLED"]).default("IN_TRANSIT"),
+  deliveryStatus: z.enum(["IN_TRANSIT", "WAITING_FOR_UNLOADING", "UNLOADED", "CANCELLED"]).default("IN_TRANSIT"),
   mode: z.enum(["NORMAL", "EXPRESS"]).default("NORMAL"),
   remarks: z.string().optional(),
 });

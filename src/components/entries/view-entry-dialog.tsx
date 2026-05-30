@@ -88,8 +88,13 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                 <Truck className="h-6 w-6 animate-pulse" />
               </div>
               <div>
-                <DialogTitle className="text-xl font-bold uppercase tracking-wide text-zinc-900 dark:text-zinc-50">
+                <DialogTitle className="text-xl font-bold uppercase tracking-wide text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
                   {entry.vehicleNumber}
+                  {(entry as any).previousVehicleNumber && (
+                    <span className="text-sm line-through text-zinc-400 dark:text-zinc-500" title="Previous Vehicle Number">
+                      {(entry as any).previousVehicleNumber}
+                    </span>
+                  )}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                   LR Number: <span className="font-mono font-semibold text-zinc-700 dark:text-zinc-300">{entry.lrNumber}</span> | Reported on {format(new Date(entry.entryDate), "dd MMM yyyy")}{entry.loadingDate ? ` | Loaded on ${format(new Date(entry.loadingDate), "dd MMM yyyy")}` : ""}

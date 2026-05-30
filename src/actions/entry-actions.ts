@@ -84,7 +84,7 @@ export async function getDashboardStats() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [totalVehiclesToday, pendingBalance, deliveredVehicles, expiredEwayBills, totalVehiclesBooked, totalOutstanding] = await Promise.all([
+    const [totalVehiclesToday, pendingBalance, deliveredVehicles, expiredEwayBills, totalVehiclesBooked, totalOutstanding, waitingForUnloading] = await Promise.all([
       prisma.vehicleEntry.count({
         where: {
           entryDate: {
@@ -102,7 +102,7 @@ export async function getDashboardStats() {
       }),
       prisma.vehicleEntry.count({
         where: {
-          deliveryStatus: 'DELIVERED',
+          deliveryStatus: 'UNLOADED',
           updatedAt: {
             gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // Last 7 days
           }
@@ -120,6 +120,12 @@ export async function getDashboardStats() {
       // Total freight cost (sum of all freightAmount)
       prisma.vehicleEntry.aggregate({
         _sum: { freightAmount: true }
+      }),
+      // Waiting for unloading count
+      prisma.vehicleEntry.count({
+        where: {
+          deliveryStatus: 'WAITING_FOR_UNLOADING'
+        }
       })
     ]);
 
@@ -132,6 +138,7 @@ export async function getDashboardStats() {
         expiredEwayBills,
         totalVehiclesBooked,
         totalOutstanding: totalOutstanding._sum.freightAmount || 0,
+        waitingForUnloading,
       }
     };
 
@@ -162,6 +169,14 @@ export async function updateVehicleEntry(id: string, formData: z.infer<typeof ve
     });
     if (broker) {
       validatedData.brokerName = broker.brokerName;
+    }
+
+    const existingEntry = await prisma.vehicleEntry.findUnique({
+      where: { id }
+    });
+
+    if (existingEntry && existingEntry.vehicleNumber !== validatedData.vehicleNumber) {
+      validatedData.previousVehicleNumber = existingEntry.vehicleNumber;
     }
 
     const entry = await prisma.vehicleEntry.update({
@@ -251,7 +266,7 @@ export async function getRecentVehicleEntries(limit: number = 10, excludeDeliver
   try {
     const entries = await prisma.vehicleEntry.findMany({
       where: excludeDelivered
-        ? { deliveryStatus: { not: "DELIVERED" } }
+        ? { deliveryStatus: { not: "UNLOADED" } }
         : undefined,
       orderBy: [
         { entryDate: "desc" },
@@ -291,7 +306,7 @@ export async function getInTransitVehicles() {
     const entries = await prisma.vehicleEntry.findMany({
       where: {
         deliveryStatus: {
-          not: "DELIVERED"
+          not: "UNLOADED"
         }
       },
       orderBy: [
@@ -308,19 +323,19 @@ export async function getInTransitVehicles() {
   }
 }
 
-export async function markVehicleAsDelivered(id: string) {
+export async function markVehicleAsUnloaded(id: string) {
   try {
     const entry = await prisma.vehicleEntry.update({
       where: { id },
       data: {
-        deliveryStatus: "DELIVERED",
+        deliveryStatus: "UNLOADED",
       },
     });
     revalidatePath("/entries");
     revalidatePath("/dashboard");
     return { success: true, data: entry };
   } catch (error) {
-    return { success: false, error: "Failed to mark vehicle as delivered" };
+    return { success: false, error: "Failed to mark vehicle as unloaded" };
   }
 }
 

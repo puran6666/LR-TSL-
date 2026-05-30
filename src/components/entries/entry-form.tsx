@@ -336,7 +336,8 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="IN_TRANSIT">In Transit</SelectItem>
-                    <SelectItem value="DELIVERED">Delivered</SelectItem>
+                    <SelectItem value="WAITING_FOR_UNLOADING">Waiting for Unloading</SelectItem>
+                    <SelectItem value="UNLOADED">Unloaded</SelectItem>
                     <SelectItem value="CANCELLED">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
