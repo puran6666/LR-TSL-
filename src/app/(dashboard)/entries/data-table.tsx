@@ -23,7 +23,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
-import { X, Search, Calendar, CalendarDays } from "lucide-react";
+import { X, Search, Calendar, CalendarDays, Filter } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -39,28 +46,40 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
-  const [monthFilter, setMonthFilter] = useState("");
+  const [timeframe, setTimeframe] = useState("all");
 
   const filteredData = useMemo(() => {
     return data.filter((item: any) => {
-      // Date filter (exact day)
-      if (dateFilter) {
-        if (!item.entryDate) return false;
-        const itemDate = new Date(item.entryDate).toISOString().split('T')[0];
-        if (itemDate !== dateFilter) return false;
-      }
+      if (timeframe === "all") return true;
+
+      const itemDateObj = new Date(item.entryDate);
+      if (isNaN(itemDateObj.getTime())) return true;
       
-      // Month filter (YYYY-MM)
-      if (monthFilter) {
-        if (!item.entryDate) return false;
-        const itemMonth = new Date(item.entryDate).toISOString().slice(0, 7);
-        if (itemMonth !== monthFilter) return false;
+      const now = new Date();
+      
+      if (timeframe === "today") {
+        return itemDateObj.toDateString() === now.toDateString();
+      }
+      if (timeframe === "yesterday") {
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        return itemDateObj.toDateString() === yesterday.toDateString();
+      }
+      if (timeframe === "this_month") {
+        return itemDateObj.getMonth() === now.getMonth() && itemDateObj.getFullYear() === now.getFullYear();
+      }
+      if (timeframe === "last_month") {
+        const lastMonth = new Date(now);
+        lastMonth.setMonth(lastMonth.getMonth() - 1);
+        return itemDateObj.getMonth() === lastMonth.getMonth() && itemDateObj.getFullYear() === lastMonth.getFullYear();
+      }
+      if (timeframe === "this_year") {
+        return itemDateObj.getFullYear() === now.getFullYear();
       }
 
       return true;
     });
-  }, [data, dateFilter, monthFilter]);
+  }, [data, timeframe]);
 
   const table = useReactTable({
     data: filteredData,
@@ -100,37 +119,29 @@ export function DataTable<TData, TValue>({
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-          <div className="relative group">
-            <Input
-              type="month"
-              value={monthFilter}
-              onChange={(e) => {
-                setMonthFilter(e.target.value);
-                if (e.target.value) setDateFilter(""); // Clear date if month selected
-              }}
-              className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm h-9 text-xs w-[140px]"
-              title="Filter by Month"
-            />
-          </div>
-          <div className="relative group">
-            <Input
-              type="date"
-              value={dateFilter}
-              onChange={(e) => {
-                setDateFilter(e.target.value);
-                if (e.target.value) setMonthFilter(""); // Clear month if date selected
-              }}
-              className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm h-9 text-xs w-[140px]"
-              title="Filter by Date"
-            />
-          </div>
-          {(globalFilter || dateFilter || monthFilter) && (
+          <Select value={timeframe} onValueChange={setTimeframe}>
+            <SelectTrigger className="w-[160px] bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm h-9 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+              <div className="flex items-center gap-2">
+                <Filter className="w-3.5 h-3.5 text-zinc-500" />
+                <SelectValue placeholder="Timeframe" />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Time</SelectItem>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="yesterday">Yesterday</SelectItem>
+              <SelectItem value="this_month">This Month</SelectItem>
+              <SelectItem value="last_month">Last Month</SelectItem>
+              <SelectItem value="this_year">This Year</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {(globalFilter || timeframe !== "all") && (
             <Button
               variant="ghost"
               onClick={() => {
                 setGlobalFilter("");
-                setDateFilter("");
-                setMonthFilter("");
+                setTimeframe("all");
               }}
               className="h-9 px-2.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
               title="Clear all filters"
