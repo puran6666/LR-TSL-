@@ -94,7 +94,7 @@ export default async function DashboardPage() {
                 <summary className="cursor-pointer text-blue-500 hover:text-blue-600 dark:text-blue-450 dark:hover:text-blue-400 font-semibold list-none select-none inline-flex items-center gap-1">
                   View Recent 10 <span className="text-[8px] opacity-70 group-open:rotate-180 transition-transform">▼</span>
                 </summary>
-                <div className="absolute top-full left-0 w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-lg mt-1 z-50 max-h-[160px] overflow-y-auto p-1.5 space-y-1">
+                <div className="mt-2 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg max-h-[160px] overflow-y-auto p-1.5 space-y-1">
                   {actualInTransit.slice(0, 10).map(v => (
                     <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
                 <summary className="cursor-pointer text-amber-500 hover:text-amber-600 dark:text-amber-450 dark:hover:text-amber-400 font-semibold list-none select-none inline-flex items-center gap-1">
                   View Recent 10 <span className="text-[8px] opacity-70 group-open:rotate-180 transition-transform">▼</span>
                 </summary>
-                <div className="absolute top-full left-0 w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-lg mt-1 z-50 max-h-[160px] overflow-y-auto p-1.5 space-y-1">
+                <div className="mt-2 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg max-h-[160px] overflow-y-auto p-1.5 space-y-1">
                   {actualWaiting.slice(0, 10).map(v => (
                     <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
                       <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
