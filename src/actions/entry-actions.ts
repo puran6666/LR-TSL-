@@ -189,6 +189,7 @@ export async function updateVehicleEntry(id: string, formData: z.infer<typeof ve
     revalidatePath("/dashboard");
     return { success: true, data: entry };
   } catch (error) {
+    console.error("Failed to update vehicle entry:", error);
     if (error instanceof z.ZodError) {
       return { success: false, error: "Validation failed" };
     }

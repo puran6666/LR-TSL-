@@ -227,6 +227,11 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Vehicle Number *</Label>
                 <Input {...form.register("vehicleNumber")} className="uppercase font-semibold tracking-wider text-zinc-950 dark:text-zinc-50" />
                 {errors.vehicleNumber && <span className="text-[10px] text-red-500 mt-0.5">{errors.vehicleNumber.message}</span>}
+                {(initialData as any)?.previousVehicleNumber && (
+                  <span className="text-[10px] text-amber-600 dark:text-amber-500 font-medium">
+                    (Previous: {(initialData as any).previousVehicleNumber})
+                  </span>
+                )}
               </div>
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Loading Date</Label>
