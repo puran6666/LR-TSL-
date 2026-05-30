@@ -193,7 +193,7 @@ export const columns: ColumnDef<VehicleEntry>[] = [
   },
   {
     accessorKey: "balancePaid",
-    header: "Paid Amount",
+    header: "Advance Paid",
     cell: ({ row }) => {
       const paid = parseFloat(row.getValue("balancePaid")) || 0;
       const date = row.original.balancePaidDate ? format(new Date(row.original.balancePaidDate), "dd MMM yyyy") : null;
