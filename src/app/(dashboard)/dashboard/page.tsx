@@ -88,23 +88,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Card 3: Pending Balance */}
-        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
-            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              Pending Balance
-            </CardTitle>
-            <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
-              <IndianRupee className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <div className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">₹{stats.pendingBalance.toLocaleString('en-IN')}</div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
-              <span className="text-rose-600/90 dark:text-rose-405 font-medium">Total outstanding dues</span>
-            </div>
-          </CardContent>
-        </Card>
 <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
   <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
     <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
@@ -142,23 +125,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Card 6: Total Outstanding */}
-        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
-            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              Broker Amount
-            </CardTitle>
-            <div className="p-1 rounded-md bg-rose-500/[0.04] text-rose-600 dark:text-rose-450 border border-rose-500/10">
-              <IndianRupee className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <div className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400">₹{stats.totalOutstanding.toLocaleString('en-IN')}</div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
-              <span>Total outstanding dues</span>
-            </div>
-          </CardContent>
-        </Card>
+
 
         </div>
 
