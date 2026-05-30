@@ -114,7 +114,7 @@ export async function getDashboardStats() {
             lt: new Date()
           },
           deliveryStatus: {
-            notIn: ["UNLOADED", "CANCELLED"]
+            notIn: ["UNLOADED", "DELIVERED", "CANCELLED"]
           }
         }
       }),
@@ -252,7 +252,7 @@ export async function getExpiringEwayBills() {
           lte: threshold
         },
         deliveryStatus: {
-          notIn: ["UNLOADED", "CANCELLED"]
+          notIn: ["UNLOADED", "DELIVERED", "CANCELLED"]
         }
       },
       orderBy: {

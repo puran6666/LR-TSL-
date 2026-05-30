@@ -22,6 +22,7 @@ export default async function EntriesPage() {
   // Expiry alerts for E-Way Bills (expired or expiring within 48 hours)
   const expiringEntries = data.filter(entry => {
     if (!entry.ewayBillNumber || !entry.ewayBillValidTill) return false;
+    if (["UNLOADED", "DELIVERED", "CANCELLED"].includes(entry.deliveryStatus)) return false;
     const expiry = new Date(entry.ewayBillValidTill);
     const diffHours = differenceInHours(expiry, now);
     return diffHours <= 48;
