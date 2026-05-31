@@ -183,7 +183,6 @@ export function DataTable<TData, TValue>({
                       setIsPopoverOpen(false);
                     }
                   }}
-                  initialFocus
                   className="p-0"
                 />
               </div>
