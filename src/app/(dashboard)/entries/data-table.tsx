@@ -127,14 +127,12 @@ export function DataTable<TData, TValue>({
         
         <div className="flex flex-wrap items-center gap-2">
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-[220px] justify-start text-left font-semibold text-xs h-9 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm",
-                  timeframe !== "all" && "text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50"
-                )}
-              >
+            <PopoverTrigger
+              className={cn(
+                "inline-flex items-center w-[220px] justify-start text-left font-semibold text-xs h-9 px-3 rounded-md bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-50 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300",
+                timeframe !== "all" && "text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900/50"
+              )}
+            >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {timeframe === "all" ? "All Time" : 
                  timeframe === "today" ? "Today" :
@@ -144,7 +142,6 @@ export function DataTable<TData, TValue>({
                  timeframe === "this_year" ? "This Year" :
                  timeframe === "custom_date" && dateFilter ? format(dateFilter, "PPP") : 
                  "Filter by Date"}
-              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 flex flex-col md:flex-row bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl overflow-hidden" align="end">
               <div className="flex flex-col gap-1 p-3 border-b md:border-b-0 md:border-r border-zinc-100 dark:border-zinc-900 w-full md:w-[150px] bg-zinc-50/50 dark:bg-zinc-900/20">
