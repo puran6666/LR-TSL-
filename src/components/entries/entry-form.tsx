@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
@@ -68,6 +68,10 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       lrNumber: initialData?.lrNumber || "",
       invoiceNumber: initialData?.invoiceNumber || "",
       packageCount: initialData?.packageCount || 1,
+      packages: ((initialData as any)?.packages as any[]) || [],
+      weightUnit: ((initialData as any)?.weightUnit) || "MT",
+      grossWeight: ((initialData as any)?.grossWeight) || undefined,
+      actualWeight: ((initialData as any)?.actualWeight) || undefined,
       freightAmount: initialData?.freightAmount || 0,
       billingAmount: (initialData as any)?.billingAmount || 0,
       advancePaid: initialData?.advancePaid || 0,
@@ -86,7 +90,29 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
     },
   });
 
-  const { watch, setValue, handleSubmit, formState: { errors } } = form;
+  const { watch, setValue, handleSubmit, control, formState: { errors } } = form;
+
+  const { fields: packageFields, append: appendPackage, remove: removePackage } = useFieldArray({
+    control,
+    name: "packages",
+  });
+
+  // Auto calculate packageCount
+  const watchedPackages = watch("packages");
+  useEffect(() => {
+    if (watchedPackages && watchedPackages.length > 0) {
+      const total = watchedPackages.reduce((sum, pkg) => sum + (Number(pkg.quantity) || 0), 0);
+      setValue("packageCount", total);
+    }
+  }, [watchedPackages, setValue]);
+
+  // Sync actualWeight to legacy weight
+  const watchedActualWeight = watch("actualWeight");
+  useEffect(() => {
+    if (watchedActualWeight !== undefined && !isNaN(watchedActualWeight)) {
+      setValue("weight", watchedActualWeight);
+    }
+  }, [watchedActualWeight, setValue]);
 
   // Sync invoices array to invoiceNumber input form field
   useEffect(() => {
@@ -407,15 +433,80 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 {errors.lrNumber && <span className="text-[10px] text-red-500 mt-0.5">{errors.lrNumber.message}</span>}
               </div>
 
-              <div className="grid gap-1.5">
-                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Weight (MT) *</Label>
-                <Input {...form.register("weight", { valueAsNumber: true })} type="number" step="0.01" className="text-zinc-900 dark:text-zinc-100" />
-                {errors.weight && <span className="text-[10px] text-red-500 mt-0.5">{errors.weight.message}</span>}
+              {/* Weight Details */}
+              <div className="grid gap-1.5 sm:col-span-2 border border-zinc-100 dark:border-zinc-800/60 p-3 rounded-lg bg-zinc-50/50 dark:bg-zinc-900/20">
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-zinc-700 dark:text-zinc-300 font-bold uppercase text-[10px] tracking-wider">Weight Details</Label>
+                  <div className="flex items-center bg-zinc-200/50 dark:bg-zinc-800 p-0.5 rounded-md">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      onClick={() => setValue("weightUnit", "MT")}
+                      className={cn("h-6 px-3 text-[10px] font-bold rounded-sm transition-all", watch("weightUnit") === "MT" ? "bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white" : "text-zinc-500")}
+                    >MT</Button>
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      onClick={() => setValue("weightUnit", "KG")}
+                      className={cn("h-6 px-3 text-[10px] font-bold rounded-sm transition-all", watch("weightUnit") === "KG" ? "bg-white dark:bg-zinc-700 shadow-sm text-zinc-900 dark:text-white" : "text-zinc-500")}
+                    >KG</Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="grid gap-1.5">
+                    <Label className="text-zinc-600 dark:text-zinc-400 font-medium text-xs">Gross Weight</Label>
+                    <Input {...form.register("grossWeight", { valueAsNumber: true })} type="number" step="0.01" className="text-zinc-900 dark:text-zinc-100" />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label className="text-zinc-600 dark:text-zinc-400 font-medium text-xs">Actual Weight *</Label>
+                    <Input {...form.register("actualWeight", { valueAsNumber: true })} type="number" step="0.01" className="text-zinc-900 dark:text-zinc-100" />
+                    {errors.actualWeight && <span className="text-[10px] text-red-500 mt-0.5">{errors.actualWeight.message}</span>}
+                    {/* Hidden legacy weight input to keep validation passing if they rely on it */}
+                    <input type="hidden" {...form.register("weight", { valueAsNumber: true })} />
+                  </div>
+                </div>
               </div>
 
-              <div className="grid gap-1.5">
-                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Package Count</Label>
-                <Input {...form.register("packageCount", { valueAsNumber: true })} type="number" className="text-zinc-900 dark:text-zinc-100" />
+              {/* Dynamic Packages */}
+              <div className="grid gap-2 sm:col-span-2 mt-2">
+                <div className="flex justify-between items-center pb-2 border-b border-zinc-100 dark:border-zinc-800">
+                  <Label className="text-zinc-700 dark:text-zinc-300 font-bold uppercase text-[10px] tracking-wider">Packages (Total: {watch("packageCount") || 0})</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={() => appendPackage({ dieName: "", quantity: 1, description: "" })} className="h-7 text-xs bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
+                    <Plus className="h-3 w-3 mr-1" /> Add Package
+                  </Button>
+                </div>
+                
+                {/* Hidden legacy input */}
+                <input type="hidden" {...form.register("packageCount", { valueAsNumber: true })} />
+
+                <div className="space-y-2">
+                  {packageFields.map((field, index) => (
+                    <div key={field.id} className="grid grid-cols-[1.5fr_80px_1fr_auto] gap-2 items-start bg-zinc-50 dark:bg-zinc-900/30 p-2 rounded-lg border border-zinc-200 dark:border-zinc-800/80">
+                      <div className="space-y-1">
+                        {index === 0 && <Label className="text-[10px] text-zinc-500 uppercase">Die Name</Label>}
+                        <Input {...form.register(`packages.${index}.dieName`)} placeholder="e.g. Mold A" className="h-8 text-xs bg-white dark:bg-zinc-950" />
+                      </div>
+                      <div className="space-y-1">
+                        {index === 0 && <Label className="text-[10px] text-zinc-500 uppercase">Qty *</Label>}
+                        <Input {...form.register(`packages.${index}.quantity`, { valueAsNumber: true })} type="number" min="1" placeholder="Qty" className="h-8 text-xs bg-white dark:bg-zinc-950" />
+                      </div>
+                      <div className="space-y-1">
+                        {index === 0 && <Label className="text-[10px] text-zinc-500 uppercase">Description</Label>}
+                        <Input {...form.register(`packages.${index}.description`)} placeholder="Notes..." className="h-8 text-xs bg-white dark:bg-zinc-950" />
+                      </div>
+                      <div className={cn("flex items-center", index === 0 ? "mt-5" : "mt-0")}>
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removePackage(index)} className="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {packageFields.length === 0 && (
+                    <div className="text-center py-6 px-4 rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/20">
+                      <p className="text-xs text-zinc-500">No packages added yet. Click &quot;Add Package&quot; to specify die names and quantities.</p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid gap-1.5">

@@ -41,6 +41,9 @@ model VehicleEntry {
   driverMobile      String
   vehicleType       String
   weight            Float
+  grossWeight       Float?   @default(0)
+  actualWeight      Float?   @default(0)
+  weightUnit        String   @default("MT")
   fromLocation      String
   toDestination     String
   pickupCompany     String
@@ -49,6 +52,7 @@ model VehicleEntry {
   lrNumber          String   @unique
   invoiceNumber     String
   packageCount      Int
+  packages          Json?    @default("[]")
   billNumber        String?
   ewayBillNumber    String?
   ewayBillValidTill DateTime?

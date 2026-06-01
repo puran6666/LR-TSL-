@@ -11,6 +11,9 @@ export const vehicleEntrySchema = z.object({
   driverMobile: z.string().min(10, "Valid mobile is required"),
   vehicleType: z.string(),
   weight: z.number().min(0),
+  grossWeight: z.number().min(0).optional(),
+  actualWeight: z.number().min(0).optional(),
+  weightUnit: z.enum(["MT", "KG"]).default("MT"),
   fromLocation: z.string().min(1, "From location is required"),
   toDestination: z.string().min(1, "Destination is required"),
   pickupCompany: z.string(),
@@ -18,7 +21,12 @@ export const vehicleEntrySchema = z.object({
   
   lrNumber: z.string().min(1, "LR Number is required"),
   invoiceNumber: z.string(),
-  packageCount: z.number().min(1),
+  packageCount: z.number().min(0).optional(),
+  packages: z.array(z.object({
+    dieName: z.string().optional(),
+    quantity: z.number().min(1, "Quantity must be at least 1"),
+    description: z.string().optional()
+  })).optional().default([]),
   billNumber: z.string().optional(),
   ewayBillNumber: z.string().optional(),
   ewayBillValidTill: z.preprocess((val) => (val === "" || val === null || val === undefined ? null : typeof val === "string" ? new Date(val) : val), z.date().optional().nullable()),

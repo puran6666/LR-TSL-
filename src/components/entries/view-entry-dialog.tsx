@@ -206,12 +206,31 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                   )}
                 </div>
                 <div className="flex justify-between pt-1">
-                  <span className="text-zinc-400">Cargo Weight:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{entry.weight} MT</span>
+                  <span className="text-zinc-400">Gross Weight:</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{(entry as any).grossWeight || 0} {(entry as any).weightUnit || 'MT'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-zinc-400">Package Count:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{entry.packageCount} PKGS</span>
+                  <span className="text-zinc-400">Actual Weight:</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{(entry as any).actualWeight || entry.weight} {(entry as any).weightUnit || 'MT'}</span>
+                </div>
+                
+                <div className="pt-2">
+                  <span className="text-zinc-400 block mb-2">Packages (Total: {entry.packageCount}):</span>
+                  {((entry as any).packages && Array.isArray((entry as any).packages) && (entry as any).packages.length > 0) ? (
+                    <div className="space-y-2">
+                      {((entry as any).packages).map((pkg: any, idx: number) => (
+                        <div key={idx} className="bg-zinc-100 dark:bg-zinc-800/50 p-2 rounded-md text-xs">
+                          <div className="flex justify-between items-start mb-1">
+                            <span className="font-bold text-zinc-700 dark:text-zinc-300">{pkg.dieName || `Package ${idx + 1}`}</span>
+                            <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">Qty: {pkg.quantity}</Badge>
+                          </div>
+                          {pkg.description && <span className="text-zinc-500 dark:text-zinc-400 block mt-1">{pkg.description}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-zinc-500 italic text-xs">No specific package details</span>
+                  )}
                 </div>
                 {entry.ewayBillNumber && (
                   <>
