@@ -114,6 +114,29 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
     }
   }, [watchedActualWeight, setValue]);
 
+  // Auto calculate E-Way Bill validity date
+  const watchedDistance = watch("distance");
+  const watchedLoadingDate = watch("loadingDate");
+  useEffect(() => {
+    if (watchedDistance && watchedLoadingDate) {
+      const distance = Number(watchedDistance);
+      if (!isNaN(distance) && distance > 0) {
+        const validityDays = Math.ceil(distance / 200);
+        const loadingDateObj = new Date(watchedLoadingDate);
+        
+        if (!isNaN(loadingDateObj.getTime())) {
+          loadingDateObj.setDate(loadingDateObj.getDate() + validityDays);
+          const newValidTill = loadingDateObj.toISOString().split("T")[0];
+          
+          const currentValidTill = form.getValues("ewayBillValidTill");
+          if (currentValidTill !== newValidTill) {
+            setValue("ewayBillValidTill", newValidTill as any, { shouldValidate: true, shouldDirty: true });
+          }
+        }
+      }
+    }
+  }, [watchedDistance, watchedLoadingDate, form, setValue]);
+
   // Sync invoices array to invoiceNumber input form field
   useEffect(() => {
     setValue("invoiceNumber", invoices.join(", "));
