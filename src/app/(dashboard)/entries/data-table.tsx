@@ -97,6 +97,11 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
     globalFilterFn: (row, columnId, value) => {
       const val = row.getValue(columnId);
       if (val === null || val === undefined) return false;
