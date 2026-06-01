@@ -18,8 +18,8 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     header: "Vehicle / Date",
     accessorFn: (row) => `${row.vehicleNumber} ${format(new Date(row.entryDate), "dd MMM yyyy")} ${row.loadingDate ? format(new Date(row.loadingDate), "dd MMM yyyy") : ""}`,
     sortingFn: (rowA, rowB) => {
-      const dateA = new Date(rowA.original.entryDate).getTime();
-      const dateB = new Date(rowB.original.entryDate).getTime();
+      const dateA = new Date(rowA.original.loadingDate || rowA.original.entryDate).getTime();
+      const dateB = new Date(rowB.original.loadingDate || rowB.original.entryDate).getTime();
       return dateA - dateB;
     },
     cell: ({ row }) => (
