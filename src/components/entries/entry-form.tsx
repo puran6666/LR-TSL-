@@ -127,8 +127,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
         if (!isNaN(loadingDateObj.getTime())) {
           loadingDateObj.setDate(loadingDateObj.getDate() + validityDays);
           const newValidTill = loadingDateObj.toISOString().split("T")[0];
-          
-          const currentValidTill = form.getValues("ewayBillValidTill");
+          const currentValidTill = form.getValues("ewayBillValidTill") as any;
           if (currentValidTill !== newValidTill) {
             setValue("ewayBillValidTill", newValidTill as any, { shouldValidate: true, shouldDirty: true });
           }
