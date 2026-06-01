@@ -21,7 +21,7 @@ export const vehicleEntrySchema = z.object({
   
   lrNumber: z.string().min(1, "LR Number is required"),
   invoiceNumber: z.string(),
-  packageCount: z.number().min(0).optional(),
+  packageCount: z.number().min(0).default(0),
   packages: z.array(z.object({
     dieName: z.string().optional(),
     quantity: z.number().min(1, "Quantity must be at least 1"),
