@@ -17,6 +17,11 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     id: "vehicle_date",
     header: "Vehicle / Date",
     accessorFn: (row) => `${row.vehicleNumber} ${format(new Date(row.entryDate), "dd MMM yyyy")} ${row.loadingDate ? format(new Date(row.loadingDate), "dd MMM yyyy") : ""}`,
+    sortingFn: (rowA, rowB) => {
+      const dateA = new Date(rowA.original.entryDate).getTime();
+      const dateB = new Date(rowB.original.entryDate).getTime();
+      return dateA - dateB;
+    },
     cell: ({ row }) => (
       <div className="flex flex-col gap-0.5 min-w-[100px]">
         <div className="flex items-center gap-2">
@@ -72,8 +77,18 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     accessorFn: (row) => `${row.fromLocation} to ${row.toDestination} ${row.pickupCompany || ''} ${row.deliveryCompany || ''}`,
     cell: ({ row }) => (
       <div className="flex flex-col gap-0.5 text-xs">
+        {row.original.pickupCompany && (
+          <span className="font-bold text-[9px] text-purple-600 dark:text-purple-400 uppercase tracking-wider truncate max-w-[120px]" title={row.original.pickupCompany}>
+            {row.original.pickupCompany}
+          </span>
+        )}
         <span className="font-semibold text-zinc-700 dark:text-zinc-300">{row.original.fromLocation}</span>
         <span className="text-[10px] text-zinc-400 dark:text-zinc-500">to {row.original.toDestination}</span>
+        {row.original.deliveryCompany && (
+          <span className="font-bold text-[9px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider truncate max-w-[120px] mt-0.5" title={row.original.deliveryCompany}>
+            {row.original.deliveryCompany}
+          </span>
+        )}
       </div>
     ),
   },

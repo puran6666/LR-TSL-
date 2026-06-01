@@ -98,6 +98,12 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     initialState: {
+      sorting: [
+        {
+          id: "vehicle_date",
+          desc: true,
+        }
+      ],
       pagination: {
         pageSize: 10,
       },
