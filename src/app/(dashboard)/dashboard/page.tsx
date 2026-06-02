@@ -413,13 +413,8 @@ export default async function DashboardPage() {
                           <td className="py-3.5 px-4">
                             <div className="flex flex-col gap-0.5">
                               <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider">{entry.vehicleNumber}</span>
-                              <div className="flex flex-col gap-0.5 text-[10px] text-zinc-450 dark:text-zinc-500 font-medium">
-                                <span>Rep: {format(new Date(entry.entryDate), "dd MMM yyyy")}</span>
-                                {entry.loadingDate && (
-                                  <span className="text-zinc-500 dark:text-zinc-400 font-semibold bg-zinc-50 dark:bg-zinc-900 px-1 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50 w-max mt-0.5">
-                                    Ld: {format(new Date(entry.loadingDate), "dd MMM yyyy")}
-                                  </span>
-                                )}
+                              <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 mt-0.5">
+                                {format(new Date(entry.loadingDate || entry.entryDate), "dd MMM yyyy")}
                               </div>
                             </div>
                           </td>

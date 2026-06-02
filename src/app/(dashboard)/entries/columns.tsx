@@ -34,13 +34,8 @@ export const columns: ColumnDef<VehicleEntry>[] = [
             </span>
           )}
         </div>
-        <div className="flex flex-col gap-0.5 text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
-          <span>Rep: {format(new Date(row.original.entryDate), "dd MMM yyyy")}</span>
-          {row.original.loadingDate && (
-            <span className="text-zinc-500 dark:text-zinc-400 font-semibold bg-zinc-50 dark:bg-zinc-900 px-1 py-0.5 rounded border border-zinc-200/50 dark:border-zinc-800/50 w-max mt-0.5">
-              Ld: {format(new Date(row.original.loadingDate), "dd MMM yyyy")}
-            </span>
-          )}
+        <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 mt-0.5">
+          {format(new Date(row.original.loadingDate || row.original.entryDate), "dd MMM yyyy")}
         </div>
       </div>
     ),
