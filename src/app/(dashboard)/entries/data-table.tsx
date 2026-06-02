@@ -55,7 +55,7 @@ export function DataTable<TData, TValue>({
     return data.filter((item: any) => {
       if (timeframe === "all") return true;
 
-      const itemDateObj = new Date(item.entryDate);
+      const itemDateObj = new Date(item.loadingDate || item.entryDate);
       if (isNaN(itemDateObj.getTime())) return true;
       
       const now = new Date();

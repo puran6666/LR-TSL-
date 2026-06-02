@@ -10,7 +10,10 @@ import { addDays } from "date-fns"; // used for clarity in calculations (optiona
 export async function getVehicleEntries() {
   try {
     const entries = await prisma.vehicleEntry.findMany({
-      orderBy: { entryDate: "desc" },
+      orderBy: [
+        { loadingDate: { sort: 'desc', nulls: 'last' } },
+        { entryDate: 'desc' }
+      ],
       include: { broker: true }
     });
     return { success: true, data: entries };
@@ -285,6 +288,7 @@ export async function getRecentVehicleEntries(limit: number = 10, excludeDeliver
         ? { deliveryStatus: { not: "UNLOADED" } }
         : undefined,
       orderBy: [
+        { loadingDate: { sort: 'desc', nulls: 'last' } },
         { entryDate: "desc" },
         { createdAt: "desc" }
       ],
@@ -326,6 +330,7 @@ export async function getInTransitVehicles() {
         }
       },
       orderBy: [
+        { loadingDate: { sort: 'desc', nulls: 'last' } },
         { entryDate: "desc" },
         { createdAt: "desc" }
       ],
