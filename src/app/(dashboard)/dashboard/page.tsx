@@ -34,7 +34,10 @@ export default async function DashboardPage() {
 
   const expiringBills = expiringResult.success ? expiringResult.data || [] : [];
   const brokers = brokersResult.success ? brokersResult.data || [] : [];
-  const recentEntries = recentResult.success ? recentResult.data || [] : [];
+  const rawRecentEntries = recentResult.success ? recentResult.data || [] : [];
+  const waitingEntries = rawRecentEntries.filter(e => e.deliveryStatus === "WAITING_FOR_UNLOADING");
+  const otherEntries = rawRecentEntries.filter(e => e.deliveryStatus !== "WAITING_FOR_UNLOADING");
+  const recentEntries = [...waitingEntries, ...otherEntries];
   const inTransitEntries = inTransitResult.success ? inTransitResult.data || [] : [];
   
   const actualInTransit = inTransitEntries.filter(e => e.deliveryStatus === "IN_TRANSIT");
