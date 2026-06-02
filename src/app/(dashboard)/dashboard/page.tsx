@@ -18,7 +18,7 @@ export default async function DashboardPage() {
   const statsResult = await getDashboardStats();
   const expiringResult = await getExpiringEwayBills();
   const brokersResult = await getBrokers();
-  const recentResult = await getRecentVehicleEntries(10, true);
+  const recentResult = await getRecentVehicleEntries(15, true);
   const inTransitResult = await getInTransitVehicles();
 
   const stats = statsResult.success && statsResult.data ? statsResult.data : {
@@ -362,13 +362,13 @@ export default async function DashboardPage() {
       )}
 
       <div className="mt-4 space-y-6">
-        {/* Recent 10 Vehicles Table Card */}
+        {/* Recent 15 Vehicles Table Card */}
         <Card className="w-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl overflow-hidden">
           <CardHeader className="pb-3.5 border-b border-zinc-100 dark:border-zinc-800">
             <CardTitle className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 flex items-center justify-between">
               <span className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 uppercase tracking-wider text-xs">
                 <Truck className="h-4 w-4 text-zinc-650 dark:text-zinc-450" />
-                Recent 10 Vehicles
+                Recent 15 Vehicles
               </span>
               <span className="text-[9px] uppercase bg-zinc-50 dark:bg-zinc-900 text-zinc-650 dark:text-zinc-400 font-bold px-2.5 py-0.5 rounded-md border border-zinc-250/20 dark:border-zinc-800">
                 Ledger
