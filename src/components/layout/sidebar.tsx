@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const routes = [
   {
@@ -80,9 +81,12 @@ export function Sidebar() {
       </div>
       <div className="px-4 py-2 border-t border-zinc-100 dark:border-zinc-900/80 pt-4">
         {session && (
-          <div className="mb-4 px-3 py-2 text-sm bg-zinc-50 dark:bg-zinc-900/30 rounded-xl border border-zinc-100 dark:border-zinc-900/50">
-            <p className="truncate text-zinc-800 dark:text-zinc-200 font-semibold">{session.user?.name || session.user?.email}</p>
-            <p className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 mt-0.5">{(session.user as any)?.role || "STAFF"}</p>
+          <div className="mb-4 px-3 py-2 text-sm bg-zinc-50 dark:bg-zinc-900/30 rounded-xl border border-zinc-100 dark:border-zinc-900/50 flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-zinc-800 dark:text-zinc-200 font-semibold">{session.user?.name || session.user?.email}</p>
+              <p className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 mt-0.5">{(session.user as any)?.role || "STAFF"}</p>
+            </div>
+            <ThemeToggle />
           </div>
         )}
         <Button 
