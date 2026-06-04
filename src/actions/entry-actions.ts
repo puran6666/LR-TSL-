@@ -86,7 +86,8 @@ export async function getDashboardStats() {
       totalVehiclesBooked, 
       totalOutstanding, 
       waitingForUnloading,
-      expressVehicles
+      expressVehicles,
+      totalEwayBillsGenerated
     ] = await Promise.all([
       prisma.vehicleEntry.count({
         where: {
@@ -141,6 +142,14 @@ export async function getDashboardStats() {
             notIn: ['UNLOADED', 'DELIVERED', 'CANCELLED']
           }
         }
+      }),
+      // Total E-way Bills generated
+      prisma.vehicleEntry.count({
+        where: {
+          ewayBillNumber: {
+            gt: ""
+          }
+        }
       })
     ]);
 
@@ -155,6 +164,7 @@ export async function getDashboardStats() {
         totalOutstanding: totalOutstanding._sum.freightAmount || 0,
         waitingForUnloading,
         expressVehicles,
+        totalEwayBillsGenerated,
       }
     };
 

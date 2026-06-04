@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Truck, AlertTriangle, CheckCircle, IndianRupee, TrendingUp, Clock, CalendarClock, Eye, Trash2, MapPin, FileWarning } from "lucide-react";
+import { Truck, AlertTriangle, CheckCircle, IndianRupee, TrendingUp, Clock, CalendarClock, Eye, Trash2, MapPin, FileWarning, FileText } from "lucide-react";
 import { getDashboardStats, getExpiringEwayBills, getRecentVehicleEntries, getInTransitVehicles } from "@/actions/entry-actions";
 import { getBrokers } from "@/actions/broker-actions";
 import { auth } from "@/auth";
@@ -29,7 +29,8 @@ export default async function DashboardPage() {
     totalVehiclesBooked: 0,
     totalOutstanding: 0,
     waitingForUnloading: 0,
-    expressVehicles: 0
+    expressVehicles: 0,
+    totalEwayBillsGenerated: 0
   };
 
   const expiringBills = expiringResult.success ? expiringResult.data || [] : [];
@@ -62,7 +63,7 @@ export default async function DashboardPage() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {/* Card 1: Total Vehicles Today */}
         <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
@@ -210,6 +211,24 @@ export default async function DashboardPage() {
                   {actualExpress.length === 0 && <span className="italic text-[9px] px-1 text-zinc-400">No express vehicles</span>}
                 </div>
               </details>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Card 7: E-Way Bills Generated */}
+        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
+            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+              E-Way Bills Generated
+            </CardTitle>
+            <div className="p-1 rounded-md bg-indigo-500/[0.04] text-indigo-600 dark:text-indigo-450 border border-indigo-500/10">
+              <FileText className="h-4 w-4" />
+            </div>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            <div className="text-2xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400">{stats.totalEwayBillsGenerated}</div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-indigo-600 dark:text-indigo-500 font-semibold">
+              <span>Overall documented</span>
             </div>
           </CardContent>
         </Card>
