@@ -284,9 +284,26 @@ export default async function DashboardPage() {
                         <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
                           {bill.vehicleNumber}
                         </span>
-                        <div className="flex items-center gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
-                          <MapPin className="w-2.5 h-2.5 shrink-0" />
-                          <span className="truncate max-w-[160px]">{bill.fromLocation} → {bill.toDestination}</span>
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
+                            <MapPin className="w-2.5 h-2.5 shrink-0" />
+                            <span className="truncate max-w-[160px]">{bill.fromLocation} → {bill.toDestination}</span>
+                          </div>
+                          {(bill.pickupCompany || bill.deliveryCompany) && (
+                            <div className="flex items-center gap-1 text-[9px] ml-3.5">
+                              {bill.pickupCompany && (
+                                <span className="font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider truncate max-w-[80px]" title={bill.pickupCompany}>
+                                  {bill.pickupCompany}
+                                </span>
+                              )}
+                              {bill.pickupCompany && bill.deliveryCompany && <span className="text-zinc-300 dark:text-zinc-700">/</span>}
+                              {bill.deliveryCompany && (
+                                <span className="font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider truncate max-w-[80px]" title={bill.deliveryCompany}>
+                                  {bill.deliveryCompany}
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                       <span className={`shrink-0 text-[8px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider ${
@@ -318,10 +335,10 @@ export default async function DashboardPage() {
                     </div>
 
                     {/* Expiry date line */}
-                    <div className="text-[9px] text-zinc-400 dark:text-zinc-500">
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                       {isExpired
-                        ? <span className="text-rose-500">Expired on {format(expiryDate, "dd MMM yyyy, hh:mm a")}</span>
-                        : <span>Valid till <strong className="text-zinc-600 dark:text-zinc-300">{format(expiryDate, "dd MMM yyyy")}</strong></span>
+                        ? <span className="text-rose-500 font-medium">Expired on {format(expiryDate, "dd MMM yyyy, hh:mm a")}</span>
+                        : <span>Valid till <strong className="text-zinc-800 dark:text-zinc-200">{format(expiryDate, "dd MMM yyyy")}</strong></span>
                       }
                     </div>
 
