@@ -281,12 +281,12 @@ export default async function DashboardPage() {
                     {/* Vehicle + status badge */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col gap-0.5 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100 leading-none">
                             {bill.vehicleNumber}
                           </span>
                           {bill.previousVehicleNumber && (
-                            <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold" title="Previous Vehicle Number">
+                            <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold leading-none" title="Previous Vehicle Number">
                               {bill.previousVehicleNumber}
                             </span>
                           )}
@@ -437,10 +437,10 @@ export default async function DashboardPage() {
                         <tr key={entry.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
                           <td className="py-3.5 px-4">
                             <div className="flex flex-col gap-0.5">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider">{entry.vehicleNumber}</span>
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider leading-none">{entry.vehicleNumber}</span>
                                 {entry.previousVehicleNumber && (
-                                  <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold" title="Previous Vehicle Number">
+                                  <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold leading-none" title="Previous Vehicle Number">
                                     {entry.previousVehicleNumber}
                                   </span>
                                 )}
