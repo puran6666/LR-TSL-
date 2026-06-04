@@ -286,7 +286,7 @@ export default async function DashboardPage() {
                             {bill.vehicleNumber}
                           </span>
                           {bill.previousVehicleNumber && (
-                            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold leading-none mt-0.5" title="Previous Vehicle Number">
+                            <span className="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-1 rounded font-bold uppercase mt-1 w-fit" title="Previous Vehicle Number">
                               {bill.previousVehicleNumber}
                             </span>
                           )}
@@ -440,7 +440,7 @@ export default async function DashboardPage() {
                               <div className="flex flex-col gap-0.5">
                                 <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider leading-none">{entry.vehicleNumber}</span>
                                 {entry.previousVehicleNumber && (
-                                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold leading-none mt-0.5" title="Previous Vehicle Number">
+                                  <span className="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-1 rounded font-bold uppercase mt-1 w-fit" title="Previous Vehicle Number">
                                     {entry.previousVehicleNumber}
                                   </span>
                                 )}
