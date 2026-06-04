@@ -234,9 +234,9 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                 </div>
                 {entry.ewayBillNumber && (
                   <>
-                    <div className="flex justify-between border-t border-zinc-100 dark:border-zinc-900 pt-2">
-                      <span className="text-zinc-400">E-Way Bill:</span>
-                      <span className="font-mono font-semibold text-zinc-800 dark:text-zinc-200">{entry.ewayBillNumber}</span>
+                    <div className="flex justify-between items-start border-t border-zinc-100 dark:border-zinc-900 pt-2">
+                      <span className="text-zinc-400 pt-0.5">E-Way Bills ({entry.ewayBillNumber.split(',').filter(Boolean).length}):</span>
+                      <span className="font-mono font-semibold text-zinc-800 dark:text-zinc-200 max-w-[60%] text-right break-words">{entry.ewayBillNumber}</span>
                     </div>
                     {entry.ewayBillValidTill && (
                       <div className="flex justify-between">

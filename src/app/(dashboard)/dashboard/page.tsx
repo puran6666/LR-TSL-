@@ -63,7 +63,7 @@ export default async function DashboardPage() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {/* Card 1: Total Vehicles Today */}
         <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
@@ -215,23 +215,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Card 7: E-Way Bills Generated */}
-        <Card className="group border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-none rounded-xl">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 pb-2">
-            <CardTitle className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-              E-Way Bills Generated
-            </CardTitle>
-            <div className="p-1 rounded-md bg-indigo-500/[0.04] text-indigo-600 dark:text-indigo-450 border border-indigo-500/10">
-              <FileText className="h-4 w-4" />
-            </div>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <div className="text-2xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400">{stats.totalEwayBillsGenerated}</div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-indigo-600 dark:text-indigo-500 font-semibold">
-              <span>Overall documented</span>
-            </div>
-          </CardContent>
-        </Card>
+
       </div>
 
       {/* E-Way Bill Expiry Alerts — IN_TRANSIT only, auto-hidden once extended or unloaded */}
@@ -491,7 +475,10 @@ export default async function DashboardPage() {
                               <div className="flex flex-col gap-0.5">
                                 <span className="font-mono text-xs font-semibold text-zinc-800 dark:text-zinc-200">{entry.ewayBillNumber}</span>
                                 {entry.ewayBillValidTill ? (
-                                  <div className="flex items-center gap-1.5 mt-0.5">
+                                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                    <Badge variant="secondary" className="text-[8px] py-0 px-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold shadow-none shrink-0">
+                                      {entry.ewayBillNumber.split(",").filter(Boolean).length} {entry.ewayBillNumber.split(",").filter(Boolean).length === 1 ? 'Bill' : 'Bills'}
+                                    </Badge>
                                     {ewayStatus === "expired" && (
                                       <Badge variant="outline" className="text-[8px] py-0 px-1 font-bold bg-rose-500/[0.04] border-rose-500/15 text-rose-600 dark:text-rose-450 shadow-none rounded-sm">EXP</Badge>
                                     )}
@@ -510,7 +497,12 @@ export default async function DashboardPage() {
                                     </span>
                                   </div>
                                 ) : (
-                                  <span className="text-[10px] text-zinc-400 dark:text-zinc-500">No validity</span>
+                                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                    <Badge variant="secondary" className="text-[8px] py-0 px-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold shadow-none shrink-0">
+                                      {entry.ewayBillNumber.split(",").filter(Boolean).length} {entry.ewayBillNumber.split(",").filter(Boolean).length === 1 ? 'Bill' : 'Bills'}
+                                    </Badge>
+                                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500">No validity</span>
+                                  </div>
                                 )}
                               </div>
                             ) : (

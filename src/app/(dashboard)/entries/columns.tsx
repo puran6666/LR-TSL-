@@ -127,11 +127,18 @@ export const columns: ColumnDef<VehicleEntry>[] = [
         return <span className="text-[10px] text-zinc-400 dark:text-zinc-500 italic">Not Provided</span>;
       }
       
+      const count = ewayBillNo.split(",").map(s => s.trim()).filter(Boolean).length;
+
       if (!validTill) {
         return (
           <div className="flex flex-col gap-0.5">
             <span className="font-mono text-xs font-semibold text-zinc-800 dark:text-zinc-200">{ewayBillNo}</span>
-            <span className="text-[10px] text-zinc-400 dark:text-zinc-500">Validity not set</span>
+            <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+              <Badge variant="secondary" className="text-[9px] py-0 px-1.5 h-4.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold shadow-none shrink-0">
+                {count} {count === 1 ? 'Bill' : 'Bills'}
+              </Badge>
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-500">Validity not set</span>
+            </div>
           </div>
         );
       }
@@ -150,7 +157,10 @@ export const columns: ColumnDef<VehicleEntry>[] = [
       return (
         <div className="flex flex-col gap-0.5">
           <span className="font-mono text-xs font-semibold text-zinc-800 dark:text-zinc-200">{ewayBillNo}</span>
-          <div className="flex items-center gap-1.5 mt-0.5">
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+            <Badge variant="secondary" className="text-[9px] py-0 px-1.5 h-4.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-bold shadow-none shrink-0">
+              {count} {count === 1 ? 'Bill' : 'Bills'}
+            </Badge>
             {status === "expired" && (
               <Badge variant="outline" className="text-[9px] py-0 px-1.5 h-4.5 font-bold bg-rose-500/[0.04] border-rose-500/15 text-rose-600 dark:text-rose-450 flex items-center gap-0.5 shadow-none rounded">
                 <AlertCircle className="w-2.5 h-2.5" /> EXPIRED
