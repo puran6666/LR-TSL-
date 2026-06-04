@@ -55,6 +55,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       entryDate: initialData?.entryDate ? new Date(initialData.entryDate) : new Date(),
       loadingDate: initialData?.loadingDate ? formatDateForInput(initialData.loadingDate) as any : null,
       vehicleNumber: initialData?.vehicleNumber || "",
+      previousVehicleNumber: initialData?.previousVehicleNumber || "",
       brokerId: initialData?.brokerId || "",
       brokerName: initialData?.brokerName || "",
       driverName: initialData?.driverName || "",
@@ -153,6 +154,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
         entryDate: new Date(initialData.entryDate),
         loadingDate: initialData.loadingDate ? formatDateForInput(initialData.loadingDate) as any : null,
         vehicleNumber: initialData.vehicleNumber,
+        previousVehicleNumber: initialData.previousVehicleNumber || "",
         brokerId: initialData.brokerId,
         brokerName: initialData.brokerName,
         driverName: initialData.driverName,
@@ -295,11 +297,10 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Vehicle Number *</Label>
                 <Input {...form.register("vehicleNumber")} className="uppercase font-semibold tracking-wider text-zinc-950 dark:text-zinc-50" />
                 {errors.vehicleNumber && <span className="text-[10px] text-red-500 mt-0.5">{errors.vehicleNumber.message}</span>}
-                {(initialData as any)?.previousVehicleNumber && (
-                  <span className="text-[10px] text-amber-600 dark:text-amber-500 font-medium">
-                    (Previous: {(initialData as any).previousVehicleNumber})
-                  </span>
-                )}
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Previous Vehicle No. (if changed)</Label>
+                <Input {...form.register("previousVehicleNumber")} placeholder="e.g. damaged vehicle no." className="uppercase text-zinc-900 dark:text-zinc-100" />
               </div>
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Loading Date</Label>
