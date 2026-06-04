@@ -281,9 +281,16 @@ export default async function DashboardPage() {
                     {/* Vehicle + status badge */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-                          {bill.vehicleNumber}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                            {bill.vehicleNumber}
+                          </span>
+                          {bill.previousVehicleNumber && (
+                            <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold" title="Previous Vehicle Number">
+                              {bill.previousVehicleNumber}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex flex-col gap-0.5">
                           <div className="flex items-center gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
                             <MapPin className="w-2.5 h-2.5 shrink-0" />
@@ -430,7 +437,14 @@ export default async function DashboardPage() {
                         <tr key={entry.id} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
                           <td className="py-3.5 px-4">
                             <div className="flex flex-col gap-0.5">
-                              <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider">{entry.vehicleNumber}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-zinc-900 dark:text-zinc-100 uppercase text-xs tracking-wider">{entry.vehicleNumber}</span>
+                                {entry.previousVehicleNumber && (
+                                  <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold" title="Previous Vehicle Number">
+                                    {entry.previousVehicleNumber}
+                                  </span>
+                                )}
+                              </div>
                               <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 mt-0.5">
                                 {format(new Date(entry.loadingDate || entry.entryDate), "dd MMM yyyy")}
                               </div>
