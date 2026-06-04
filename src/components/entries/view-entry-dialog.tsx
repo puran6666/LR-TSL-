@@ -91,7 +91,7 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                 <DialogTitle className="text-xl font-bold uppercase tracking-wide text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
                   {entry.vehicleNumber}
                   {(entry as any).previousVehicleNumber && (
-                    <span className="text-sm line-through text-zinc-400 dark:text-zinc-500" title="Previous Vehicle Number">
+                    <span className="text-sm text-zinc-400 dark:text-zinc-500" title="Previous Vehicle Number">
                       {(entry as any).previousVehicleNumber}
                     </span>
                   )}

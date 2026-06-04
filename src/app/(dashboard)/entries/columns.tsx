@@ -29,7 +29,7 @@ export const columns: ColumnDef<VehicleEntry>[] = [
             {row.original.vehicleNumber}
           </span>
           {(row.original as any).previousVehicleNumber && (
-            <span className="text-[9px] line-through text-zinc-400 dark:text-zinc-500 uppercase font-semibold leading-none" title="Previous Vehicle Number">
+            <span className="text-[9px] text-zinc-400 dark:text-zinc-500 uppercase font-semibold leading-none" title="Previous Vehicle Number">
               {(row.original as any).previousVehicleNumber}
             </span>
           )}
