@@ -10,6 +10,7 @@ import { EditEntryDialog } from "@/components/entries/edit-entry-dialog";
 import { ViewEntryDialog } from "@/components/entries/view-entry-dialog";
 import { DeleteEntryDialog } from "@/components/entries/delete-entry-dialog";
 import { format, differenceInHours, differenceInDays } from "date-fns";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const dynamic = 'force-dynamic';
 
@@ -60,6 +61,9 @@ export default async function DashboardPage() {
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             Real-time analytics, dispatch operations, and financial outstanding.
           </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
         </div>
       </div>
       
