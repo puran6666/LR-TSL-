@@ -281,14 +281,9 @@ export default async function DashboardPage() {
                     {/* Vehicle + status badge */}
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex flex-col gap-0.5 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
-                            {bill.vehicleNumber}
-                          </span>
-                          <span className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-450">
-                            {format(new Date(bill.loadingDate || bill.entryDate), "dd MMM yyyy")}
-                          </span>
-                        </div>
+                        <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+                          {bill.vehicleNumber}
+                        </span>
                         <div className="flex flex-col gap-0.5">
                           <div className="flex items-center gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
                             <MapPin className="w-2.5 h-2.5 shrink-0" />
@@ -340,7 +335,8 @@ export default async function DashboardPage() {
                     </div>
 
                     {/* Expiry date line */}
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                    <div className="flex flex-col gap-0.5 text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                      <span>Loading Date: <strong className="text-zinc-800 dark:text-zinc-200">{format(new Date(bill.loadingDate || bill.entryDate), "dd MMM yyyy")}</strong></span>
                       {isExpired
                         ? <span className="text-rose-500 font-medium">Expired on {format(expiryDate, "dd MMM yyyy, hh:mm a")}</span>
                         : <span>Valid till <strong className="text-zinc-800 dark:text-zinc-200">{format(expiryDate, "dd MMM yyyy")}</strong></span>
