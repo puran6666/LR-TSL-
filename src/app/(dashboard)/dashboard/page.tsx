@@ -382,7 +382,7 @@ export default async function DashboardPage() {
                 <thead>
                   <tr className="bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-250/30 dark:border-zinc-800/40 text-zinc-450 font-bold uppercase text-[9px] tracking-wider h-11">
                     <th className="px-4 font-semibold">Vehicle / Date</th>
-                    <th className="px-4 font-semibold">Route</th>
+                    <th className="px-4 font-semibold">Route & Company</th>
                     <th className="px-4 font-semibold">Delivery Status</th>
                     <th className="px-4 font-semibold">E-Way Bill Status</th>
                     <th className="px-4 font-semibold">Broker</th>
@@ -427,6 +427,21 @@ export default async function DashboardPage() {
                             <div className="flex flex-col gap-0.5 text-xs">
                               <span className="font-semibold text-zinc-700 dark:text-zinc-300">{entry.fromLocation}</span>
                               <span className="text-[10px] text-zinc-450 dark:text-zinc-500">to {entry.toDestination}</span>
+                              {(entry.pickupCompany || entry.deliveryCompany) && (
+                                <div className="flex items-center gap-1 mt-0.5 text-[9px]">
+                                  {entry.pickupCompany && (
+                                    <span className="font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider truncate max-w-[80px]" title={entry.pickupCompany}>
+                                      {entry.pickupCompany}
+                                    </span>
+                                  )}
+                                  {entry.pickupCompany && entry.deliveryCompany && <span className="text-zinc-300 dark:text-zinc-700">/</span>}
+                                  {entry.deliveryCompany && (
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider truncate max-w-[80px]" title={entry.deliveryCompany}>
+                                      {entry.deliveryCompany}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </td>
                           <td className="py-3.5 px-4">
