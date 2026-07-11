@@ -30,6 +30,7 @@ model VehicleEntry {
   id                String   @id @default(cuid())
   entryDate         DateTime
   loadingDate       DateTime?
+  unloadingDate     DateTime?
   vehicleNumber     String
   previousVehicleNumber String?
   

@@ -2,6 +2,8 @@ import { z } from "zod";
 
 export const vehicleEntrySchema = z.object({
   entryDate: z.date(),
+  loadingDate: z.date().optional().nullable(),
+  unloadingDate: z.date().optional().nullable(),
   vehicleNumber: z.string().min(1, "Vehicle number is required"),
   previousVehicleNumber: z.string().optional().nullable(),
   brokerId: z.string().min(1, "Broker is required"),

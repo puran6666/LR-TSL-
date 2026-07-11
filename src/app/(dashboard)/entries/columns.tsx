@@ -37,6 +37,11 @@ export const columns: ColumnDef<VehicleEntry>[] = [
         <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 mt-0.5">
           {format(new Date(row.original.loadingDate || row.original.entryDate), "dd MMM yyyy")}
         </div>
+        {(row.original as any).unloadingDate && (
+          <div className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
+            UL: {format(new Date((row.original as any).unloadingDate), "dd MMM yyyy")}
+          </div>
+        )}
       </div>
     ),
   },
@@ -246,6 +251,7 @@ export const columns: ColumnDef<VehicleEntry>[] = [
     cell: ({ row }) => {
       const status = row.getValue("deliveryStatus") as string;
       const mode = (row.original as any).mode as string;
+      const remarks = (row.original as any).remarks as string;
       const isUnloaded = status === "UNLOADED";
       const isWaitingForUnloading = status === "WAITING_FOR_UNLOADING";
       const isDelayed = status === "DELAYED";
@@ -275,6 +281,11 @@ export const columns: ColumnDef<VehicleEntry>[] = [
             <Badge variant="outline" className="text-[8px] py-0 px-1.5 bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 uppercase shadow-none font-bold">
               Normal
             </Badge>
+          )}
+          {remarks && (
+            <div className="text-[10px] text-zinc-500 dark:text-zinc-400 italic max-w-[100px] truncate mt-1" title={remarks}>
+              {remarks}
+            </div>
           )}
         </div>
       );

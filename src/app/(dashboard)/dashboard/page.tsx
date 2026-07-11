@@ -421,6 +421,11 @@ export default async function DashboardPage() {
                               <div className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 mt-0.5">
                                 {format(new Date(entry.loadingDate || entry.entryDate), "dd MMM yyyy")}
                               </div>
+                              {(entry as any).unloadingDate && (
+                                <div className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                                  UL: {format(new Date((entry as any).unloadingDate), "dd MMM yyyy")}
+                                </div>
+                              )}
                             </div>
                           </td>
                           <td className="py-3.5 px-4">

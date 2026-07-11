@@ -97,7 +97,7 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                   )}
                 </DialogTitle>
                 <DialogDescription className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                  LR Number: <span className="font-mono font-semibold text-zinc-700 dark:text-zinc-300">{entry.lrNumber}</span> | Reported on {format(new Date(entry.entryDate), "dd MMM yyyy")}{entry.loadingDate ? ` | Loaded on ${format(new Date(entry.loadingDate), "dd MMM yyyy")}` : ""}
+                  LR Number: <span className="font-mono font-semibold text-zinc-700 dark:text-zinc-300">{entry.lrNumber}</span> | Reported on {format(new Date(entry.entryDate), "dd MMM yyyy")}{entry.loadingDate ? ` | Loaded on ${format(new Date(entry.loadingDate), "dd MMM yyyy")}` : ""}{((entry as any).unloadingDate) ? ` | Unloaded on ${format(new Date((entry as any).unloadingDate), "dd MMM yyyy")}` : ""}
                 </DialogDescription>
               </div>
             </div>
@@ -151,6 +151,12 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                   <div className="flex justify-between">
                     <span className="text-zinc-400">Loading Date:</span>
                     <span className="font-semibold text-zinc-850 dark:text-zinc-200">{format(new Date(entry.loadingDate), "dd MMM yyyy")}</span>
+                  </div>
+                )}
+                {(entry as any).unloadingDate && (
+                  <div className="flex justify-between">
+                    <span className="text-zinc-400">Unloading Date:</span>
+                    <span className="font-semibold text-zinc-850 dark:text-zinc-200">{format(new Date((entry as any).unloadingDate), "dd MMM yyyy")}</span>
                   </div>
                 )}
                 {entry.distance && (

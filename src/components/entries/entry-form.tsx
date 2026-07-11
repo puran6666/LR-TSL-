@@ -54,6 +54,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
     defaultValues: {
       entryDate: initialData?.entryDate ? new Date(initialData.entryDate) : new Date(),
       loadingDate: initialData?.loadingDate ? formatDateForInput(initialData.loadingDate) as any : null,
+      unloadingDate: initialData?.unloadingDate ? formatDateForInput(initialData.unloadingDate) as any : null,
       vehicleNumber: initialData?.vehicleNumber || "",
       previousVehicleNumber: initialData?.previousVehicleNumber || "",
       brokerId: initialData?.brokerId || "",
@@ -153,6 +154,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       form.reset({
         entryDate: new Date(initialData.entryDate),
         loadingDate: initialData.loadingDate ? formatDateForInput(initialData.loadingDate) as any : null,
+        unloadingDate: initialData.unloadingDate ? formatDateForInput(initialData.unloadingDate) as any : null,
         vehicleNumber: initialData.vehicleNumber,
         previousVehicleNumber: initialData.previousVehicleNumber || "",
         brokerId: initialData.brokerId,
@@ -306,6 +308,11 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Loading Date</Label>
                 <Input {...form.register("loadingDate")} type="date" className="w-full text-zinc-900 dark:text-zinc-100 font-medium" />
                 {errors.loadingDate && <span className="text-[10px] text-red-500 mt-0.5">{errors.loadingDate.message}</span>}
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Unloading Date</Label>
+                <Input {...form.register("unloadingDate")} type="date" className="w-full text-zinc-900 dark:text-zinc-100 font-medium" />
+                {errors.unloadingDate && <span className="text-[10px] text-red-500 mt-0.5">{errors.unloadingDate.message}</span>}
               </div>
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Broker *</Label>

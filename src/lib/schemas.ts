@@ -3,6 +3,7 @@ import { z } from "zod";
 export const vehicleEntrySchema = z.object({
   entryDate: z.date(),
   loadingDate: z.preprocess((val) => (val === "" || val === null || val === undefined ? null : typeof val === "string" ? new Date(val) : val), z.date().optional().nullable()),
+  unloadingDate: z.preprocess((val) => (val === "" || val === null || val === undefined ? null : typeof val === "string" ? new Date(val) : val), z.date().optional().nullable()),
   vehicleNumber: z.string().min(1, "Vehicle number is required"),
   previousVehicleNumber: z.string().optional().nullable(),
   brokerId: z.string().min(1, "Broker is required"),
