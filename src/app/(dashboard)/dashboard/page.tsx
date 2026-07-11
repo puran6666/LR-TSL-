@@ -513,9 +513,11 @@ export default async function DashboardPage() {
                                     {(entry as any).broker.mobile}
                                   </span>
                                 )}
-                                <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5" title={`Driver: ${entry.driverName}`}>
-                                  Dr: {entry.driverMobile}
-                                </span>
+                                {(entry.driverName || entry.driverMobile) && (
+                                  <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5" title={`Driver: ${entry.driverName || 'N/A'}`}>
+                                    Dr: {entry.driverMobile || entry.driverName || 'N/A'}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </td>

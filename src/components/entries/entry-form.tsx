@@ -381,12 +381,12 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
                 {errors.brokerId && <span className="text-[10px] text-red-500 mt-0.5">{errors.brokerId.message}</span>}
               </div>
               <div className="grid gap-1.5">
-                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Driver Name *</Label>
+                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Driver Name</Label>
                 <Input {...form.register("driverName")} className="text-zinc-900 dark:text-zinc-100" />
                 {errors.driverName && <span className="text-[10px] text-red-500 mt-0.5">{errors.driverName.message}</span>}
               </div>
               <div className="grid gap-1.5">
-                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Driver Mobile *</Label>
+                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Driver Mobile</Label>
                 <Input {...form.register("driverMobile")} type="tel" className="font-mono text-zinc-900 dark:text-zinc-100" />
                 {errors.driverMobile && <span className="text-[10px] text-red-500 mt-0.5">{errors.driverMobile.message}</span>}
               </div>

@@ -179,11 +179,11 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                 )}
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Driver:</span>
-                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{entry.driverName}</span>
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200">{entry.driverName || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-zinc-400">Driver Mobile:</span>
-                  <span className="font-mono text-zinc-800 dark:text-zinc-200">{entry.driverMobile}</span>
+                  <span className="font-mono text-zinc-800 dark:text-zinc-200">{entry.driverMobile || 'N/A'}</span>
                 </div>
               </div>
             </div>

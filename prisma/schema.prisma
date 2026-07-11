@@ -38,8 +38,8 @@ model VehicleEntry {
   broker            Broker   @relation(fields: [brokerId], references: [id])
   brokerName        String
   
-  driverName        String
-  driverMobile      String
+  driverName        String?
+  driverMobile      String?
   vehicleType       String
   weight            Float
   grossWeight       Float?   @default(0)
