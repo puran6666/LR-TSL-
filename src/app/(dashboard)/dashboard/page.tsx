@@ -384,6 +384,7 @@ export default async function DashboardPage() {
                     <th className="px-4 font-semibold">Vehicle / Date</th>
                     <th className="px-4 font-semibold">Route & Company</th>
                     <th className="px-4 font-semibold">Delivery Status</th>
+                    <th className="px-4 font-semibold">Mode</th>
                     <th className="px-4 font-semibold">E-Way Bill Status</th>
                     <th className="px-4 font-semibold">Broker</th>
                     <th className="px-4 font-semibold text-center">Actions</th>
@@ -459,6 +460,17 @@ export default async function DashboardPage() {
                             }`}>
                               {entry.deliveryStatus.replace(/_/g, ' ')}
                             </Badge>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            {(entry as any).mode === "EXPRESS" ? (
+                              <Badge variant="outline" className="text-[9px] py-0 px-1.5 bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 uppercase shadow-none font-bold">
+                                EXPRESS
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-[9px] py-0 px-1.5 bg-zinc-100 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 uppercase shadow-none font-bold">
+                                NORMAL
+                              </Badge>
+                            )}
                           </td>
                           <td className="py-3.5 px-4">
                             {entry.ewayBillNumber ? (
@@ -572,7 +584,7 @@ export default async function DashboardPage() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-zinc-400 dark:text-zinc-550 italic">
+                      <td colSpan={7} className="py-8 text-center text-zinc-400 dark:text-zinc-550 italic">
                         No dispatches added yet.
                       </td>
                     </tr>
