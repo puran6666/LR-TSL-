@@ -391,6 +391,7 @@ export default async function DashboardPage() {
                   <tr className="bg-zinc-50/50 dark:bg-zinc-900/30 border-b border-zinc-250/30 dark:border-zinc-800/40 text-zinc-450 font-bold uppercase text-[9px] tracking-wider h-11">
                     <th className="px-4 font-semibold">Vehicle / Date</th>
                     <th className="px-4 font-semibold">Route & Company</th>
+                    <th className="px-4 font-semibold">Current Loc.</th>
                     <th className="px-4 font-semibold">Delivery Status</th>
                     <th className="px-4 font-semibold">Mode</th>
                     <th className="px-4 font-semibold">E-Way Bill Status</th>
@@ -441,14 +442,6 @@ export default async function DashboardPage() {
                             <div className="flex flex-col gap-0.5 text-xs">
                               <span className="font-semibold text-zinc-700 dark:text-zinc-300">{entry.fromLocation}</span>
                               <span className="text-[10px] text-zinc-450 dark:text-zinc-500">to {entry.toDestination}</span>
-                              {(entry as any).currentLocation && (
-                                <div className="flex items-center gap-1 mt-0.5 bg-amber-50 dark:bg-amber-500/10 px-1 py-0.5 rounded border border-amber-200 dark:border-amber-500/20 w-fit">
-                                  <MapPin className="h-2 w-2 text-amber-600 dark:text-amber-400" />
-                                  <span className="text-[8px] font-bold text-amber-700 dark:text-amber-400 truncate max-w-[100px]" title={(entry as any).currentLocation}>
-                                    {(entry as any).currentLocation}
-                                  </span>
-                                </div>
-                              )}
                               {(entry.pickupCompany || entry.deliveryCompany) && (
                                 <div className="flex items-center gap-1 mt-0.5 text-[9px]">
                                   {entry.pickupCompany && (
@@ -465,6 +458,18 @@ export default async function DashboardPage() {
                                 </div>
                               )}
                             </div>
+                          </td>
+                          <td className="py-3.5 px-4">
+                            {(entry as any).currentLocation ? (
+                              <Badge variant="outline" className="text-[9px] py-0 px-2 font-bold shadow-none rounded-md uppercase tracking-wider bg-amber-500/[0.04] border-amber-500/15 text-amber-600 dark:text-amber-450 flex items-center gap-1 w-fit">
+                                <MapPin className="h-2.5 w-2.5" />
+                                <span className="truncate max-w-[100px]" title={(entry as any).currentLocation}>
+                                  {(entry as any).currentLocation}
+                                </span>
+                              </Badge>
+                            ) : (
+                              <span className="text-[9px] text-zinc-400 dark:text-zinc-500 italic">Not set</span>
+                            )}
                           </td>
                           <td className="py-3.5 px-4">
                             <Badge variant="outline" className={`text-[9px] py-0 px-2 font-bold shadow-none rounded-md uppercase tracking-wider ${
@@ -600,7 +605,7 @@ export default async function DashboardPage() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-zinc-400 dark:text-zinc-550 italic">
+                      <td colSpan={8} className="py-8 text-center text-zinc-400 dark:text-zinc-550 italic">
                         No dispatches added yet.
                       </td>
                     </tr>

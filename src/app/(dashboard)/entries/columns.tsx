@@ -89,16 +89,22 @@ export const columns: ColumnDef<VehicleEntry>[] = [
             {row.original.deliveryCompany}
           </span>
         )}
-        {(row.original as any).currentLocation && (
-          <div className="flex items-center gap-1 mt-1 bg-amber-50 dark:bg-amber-500/10 p-1 rounded border border-amber-200 dark:border-amber-500/20 w-fit">
-            <MapPin className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
-            <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400 truncate max-w-[110px]" title={(row.original as any).currentLocation}>
-              {(row.original as any).currentLocation}
-            </span>
-          </div>
-        )}
       </div>
     ),
+  },
+  {
+    accessorKey: "currentLocation",
+    header: "Current Loc.",
+    cell: ({ row }) => {
+      const loc = (row.original as any).currentLocation;
+      if (!loc) return <span className="text-[10px] text-zinc-400 dark:text-zinc-500 italic">Not set</span>;
+      return (
+        <Badge variant="outline" className="text-[9px] py-0 px-2 font-bold shadow-none rounded-md uppercase tracking-wider bg-amber-500/[0.04] border-amber-500/15 text-amber-600 dark:text-amber-450 flex items-center gap-1 w-fit">
+          <MapPin className="h-2.5 w-2.5" />
+          <span className="truncate max-w-[120px]" title={loc}>{loc}</span>
+        </Badge>
+      );
+    }
   },
   {
     accessorKey: "lrNumber",
