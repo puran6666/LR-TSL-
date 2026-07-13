@@ -65,6 +65,7 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
       weight: initialData?.weight || 0,
       fromLocation: initialData?.fromLocation || "",
       toDestination: initialData?.toDestination || "",
+      currentLocation: (initialData as any)?.currentLocation || "",
       pickupCompany: initialData?.pickupCompany || "",
       deliveryCompany: initialData?.deliveryCompany || "",
       lrNumber: initialData?.lrNumber || "",
@@ -397,6 +398,10 @@ export function EntryForm({ brokers, userId, initialData, onSuccess }: EntryForm
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Destination *</Label>
                 <Input {...form.register("toDestination")} className="text-zinc-900 dark:text-zinc-100" />
+              </div>
+              <div className="grid gap-1.5">
+                <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Current Location</Label>
+                <Input {...form.register("currentLocation")} placeholder="e.g. Enroute Nagpur" className="text-zinc-900 dark:text-zinc-100" />
               </div>
               <div className="grid gap-1.5">
                 <Label className="text-zinc-700 dark:text-zinc-300 font-medium">Pickup Company</Label>

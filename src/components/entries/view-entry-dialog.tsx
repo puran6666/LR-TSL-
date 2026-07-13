@@ -147,6 +147,14 @@ export function ViewEntryDialog({ entry, trigger }: ViewEntryDialogProps) {
                     {entry.fromLocation} <ArrowRight className="h-3 w-3 text-zinc-400 mx-0.5" /> {entry.toDestination}
                   </span>
                 </div>
+                {(entry as any).currentLocation && (
+                  <div className="flex justify-between items-center bg-amber-50 dark:bg-amber-500/10 p-1.5 rounded-md mt-1 border border-amber-200 dark:border-amber-500/20">
+                    <span className="text-amber-700 dark:text-amber-400 text-xs font-semibold flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> Current Loc:
+                    </span>
+                    <span className="font-bold text-amber-800 dark:text-amber-300 text-xs">{(entry as any).currentLocation}</span>
+                  </div>
+                )}
                 {entry.loadingDate && (
                   <div className="flex justify-between">
                     <span className="text-zinc-400">Loading Date:</span>

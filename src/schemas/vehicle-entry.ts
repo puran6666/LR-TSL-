@@ -19,6 +19,8 @@ export const vehicleEntrySchema = z.object({
   toDestination: z.string().min(1, "Destination is required"),
   pickupCompany: z.string(),
   deliveryCompany: z.string(),
+  currentLocation: z.string().optional().nullable(),
+
   
   lrNumber: z.string().min(1, "LR Number is required"),
   invoiceNumber: z.string(),

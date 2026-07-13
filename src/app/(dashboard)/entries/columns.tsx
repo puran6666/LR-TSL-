@@ -4,7 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { VehicleEntry } from "@prisma/client";
 import { format, differenceInHours } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle2, Clock, CalendarClock } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, CalendarClock, MapPin } from "lucide-react";
 import { ExtendValidityDialog } from "@/components/entries/extend-validity-dialog";
 import { EditEntryDialog } from "@/components/entries/edit-entry-dialog";
 import { ViewEntryDialog } from "@/components/entries/view-entry-dialog";
@@ -88,6 +88,14 @@ export const columns: ColumnDef<VehicleEntry>[] = [
           <span className="font-bold text-[9px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider truncate max-w-[120px] mt-0.5" title={row.original.deliveryCompany}>
             {row.original.deliveryCompany}
           </span>
+        )}
+        {(row.original as any).currentLocation && (
+          <div className="flex items-center gap-1 mt-1 bg-amber-50 dark:bg-amber-500/10 p-1 rounded border border-amber-200 dark:border-amber-500/20 w-fit">
+            <MapPin className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+            <span className="text-[9px] font-bold text-amber-700 dark:text-amber-400 truncate max-w-[110px]" title={(row.original as any).currentLocation}>
+              {(row.original as any).currentLocation}
+            </span>
+          </div>
         )}
       </div>
     ),

@@ -265,9 +265,17 @@ export default async function DashboardPage() {
                           )}
                         </div>
                         <div className="flex flex-col gap-0.5">
-                          <div className="flex items-center gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
-                            <MapPin className="w-2.5 h-2.5 shrink-0" />
-                            <span className="truncate max-w-[160px]">{bill.fromLocation} → {bill.toDestination}</span>
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
+                              <MapPin className="w-2.5 h-2.5 shrink-0" />
+                              <span className="truncate max-w-[160px]">{bill.fromLocation} → {bill.toDestination}</span>
+                            </div>
+                            {(bill as any).currentLocation && (
+                              <div className="flex items-center gap-1 text-[9px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 w-fit px-1.5 py-0.5 rounded border border-amber-200/50 dark:border-amber-500/20">
+                                <MapPin className="w-2 h-2 shrink-0" />
+                                <span className="truncate max-w-[150px]">{(bill as any).currentLocation}</span>
+                              </div>
+                            )}
                           </div>
                           {(bill.pickupCompany || bill.deliveryCompany) && (
                             <div className="flex items-center gap-1 text-[9px] ml-3.5">
@@ -433,6 +441,14 @@ export default async function DashboardPage() {
                             <div className="flex flex-col gap-0.5 text-xs">
                               <span className="font-semibold text-zinc-700 dark:text-zinc-300">{entry.fromLocation}</span>
                               <span className="text-[10px] text-zinc-450 dark:text-zinc-500">to {entry.toDestination}</span>
+                              {(entry as any).currentLocation && (
+                                <div className="flex items-center gap-1 mt-0.5 bg-amber-50 dark:bg-amber-500/10 px-1 py-0.5 rounded border border-amber-200 dark:border-amber-500/20 w-fit">
+                                  <MapPin className="h-2 w-2 text-amber-600 dark:text-amber-400" />
+                                  <span className="text-[8px] font-bold text-amber-700 dark:text-amber-400 truncate max-w-[100px]" title={(entry as any).currentLocation}>
+                                    {(entry as any).currentLocation}
+                                  </span>
+                                </div>
+                              )}
                               {(entry.pickupCompany || entry.deliveryCompany) && (
                                 <div className="flex items-center gap-1 mt-0.5 text-[9px]">
                                   {entry.pickupCompany && (

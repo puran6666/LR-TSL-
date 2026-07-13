@@ -49,6 +49,8 @@ model VehicleEntry {
   toDestination     String
   pickupCompany     String
   deliveryCompany   String
+  currentLocation   String?
+
   
   lrNumber          String   @unique
   invoiceNumber     String
