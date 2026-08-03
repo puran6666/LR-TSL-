@@ -111,7 +111,7 @@ export default async function DashboardPage() {
                       <div className="flex flex-col gap-0.5">
                         <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase leading-none">{v.vehicleNumber}</span>
                         {(v.driverName || v.driverMobile) && (
-                          <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400" title={`Driver: ${v.driverName || 'N/A'}`}>
+                          <span className="text-[10px] font-semibold text-zinc-700 dark:text-zinc-300" title={`Driver: ${v.driverName || 'N/A'}`}>
                             {v.driverMobile || v.driverName || 'N/A'}
                           </span>
                         )}
@@ -150,7 +150,7 @@ export default async function DashboardPage() {
                       <div className="flex flex-col gap-0.5">
                         <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase leading-none">{v.vehicleNumber}</span>
                         {(v.driverName || v.driverMobile) && (
-                          <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400" title={`Driver: ${v.driverName || 'N/A'}`}>
+                          <span className="text-[10px] font-semibold text-zinc-700 dark:text-zinc-300" title={`Driver: ${v.driverName || 'N/A'}`}>
                             {v.driverMobile || v.driverName || 'N/A'}
                           </span>
                         )}
@@ -191,7 +191,7 @@ export default async function DashboardPage() {
                       <div className="flex flex-col gap-0.5">
                         <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase leading-none">{v.vehicleNumber}</span>
                         {(v.driverName || v.driverMobile) && (
-                          <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400" title={`Driver: ${v.driverName || 'N/A'}`}>
+                          <span className="text-[10px] font-semibold text-zinc-700 dark:text-zinc-300" title={`Driver: ${v.driverName || 'N/A'}`}>
                             {v.driverMobile || v.driverName || 'N/A'}
                           </span>
                         )}
@@ -280,7 +280,7 @@ export default async function DashboardPage() {
                             {bill.vehicleNumber}
                           </span>
                           {(bill.driverName || bill.driverMobile) && (
-                            <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5" title={`Driver: ${bill.driverName || 'N/A'}`}>
+                            <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300 mt-0.5" title={`Driver: ${bill.driverName || 'N/A'}`}>
                               Dr: {bill.driverMobile || bill.driverName || 'N/A'}
                             </span>
                           )}
@@ -573,7 +573,7 @@ export default async function DashboardPage() {
                                   </span>
                                 )}
                                 {(entry.driverName || entry.driverMobile) && (
-                                  <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5" title={`Driver: ${entry.driverName || 'N/A'}`}>
+                                  <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mt-0.5" title={`Driver: ${entry.driverName || 'N/A'}`}>
                                     Dr: {entry.driverMobile || entry.driverName || 'N/A'}
                                   </span>
                                 )}
