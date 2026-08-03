@@ -66,6 +66,11 @@ export const columns: ColumnDef<VehicleEntry>[] = [
                 {brokerMobile}
               </span>
             )}
+            {(row.original.driverName || row.original.driverMobile) && (
+              <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5" title={`Driver: ${row.original.driverName || 'N/A'}`}>
+                Dr: {row.original.driverMobile || row.original.driverName || 'N/A'}
+              </span>
+            )}
           </div>
         </div>
       );
@@ -237,28 +242,7 @@ export const columns: ColumnDef<VehicleEntry>[] = [
       );
     },
   },
-  {
-    accessorKey: "advancePaid",
-    header: "Advance Paid",
-    cell: ({ row }) => {
-      const paid = parseFloat(row.getValue("advancePaid")) || 0;
-      const formatted = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(paid);
-      return (
-        <div className="flex flex-col gap-0.5">
-          <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100">{formatted}</span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "hamaliCharges",
-    header: "Hamali Charges",
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("hamaliCharges")) || 0;
-      const formatted = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount);
-      return <span className="text-xs font-medium text-zinc-800 dark:text-zinc-200">{formatted}</span>;
-    },
-  },
+
   {
     accessorKey: "deliveryStatus",
     header: "Status / Mode",
