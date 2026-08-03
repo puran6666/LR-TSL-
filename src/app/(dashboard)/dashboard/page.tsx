@@ -108,8 +108,15 @@ export default async function DashboardPage() {
                 <div className="mt-2 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg max-h-[160px] overflow-y-auto p-1.5 space-y-1">
                   {actualInTransit.slice(0, 10).map(v => (
                     <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
-                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400">{v.toDestination || "-"}</span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase leading-none">{v.vehicleNumber}</span>
+                        {(v.driverName || v.driverMobile) && (
+                          <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400" title={`Driver: ${v.driverName || 'N/A'}`}>
+                            {v.driverMobile || v.driverName || 'N/A'}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400 self-start mt-0.5">{v.toDestination || "-"}</span>
                     </div>
                   ))}
                   {actualInTransit.length === 0 && <span className="italic text-[9px] px-1 text-zinc-400">No vehicles in transit</span>}
@@ -140,8 +147,15 @@ export default async function DashboardPage() {
                 <div className="mt-2 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg max-h-[160px] overflow-y-auto p-1.5 space-y-1">
                   {actualWaiting.slice(0, 10).map(v => (
                     <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
-                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400">{v.toDestination || "-"}</span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase leading-none">{v.vehicleNumber}</span>
+                        {(v.driverName || v.driverMobile) && (
+                          <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400" title={`Driver: ${v.driverName || 'N/A'}`}>
+                            {v.driverMobile || v.driverName || 'N/A'}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400 self-start mt-0.5">{v.toDestination || "-"}</span>
                     </div>
                   ))}
                   {actualWaiting.length === 0 && <span className="italic text-[9px] px-1 text-zinc-400">No vehicles waiting</span>}
@@ -174,8 +188,15 @@ export default async function DashboardPage() {
                 <div className="mt-2 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg max-h-[160px] overflow-y-auto p-1.5 space-y-1">
                   {actualExpress.slice(0, 10).map(v => (
                     <div key={v.id} className="flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/30 p-1.5 rounded-md border border-zinc-100 dark:border-zinc-800/80">
-                      <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{v.vehicleNumber}</span>
-                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400">{v.toDestination || "-"}</span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-zinc-800 dark:text-zinc-200 uppercase leading-none">{v.vehicleNumber}</span>
+                        {(v.driverName || v.driverMobile) && (
+                          <span className="text-[8px] font-mono text-zinc-500 dark:text-zinc-400" title={`Driver: ${v.driverName || 'N/A'}`}>
+                            {v.driverMobile || v.driverName || 'N/A'}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[8px] truncate max-w-[70px] bg-zinc-200/50 dark:bg-zinc-800 px-1 py-0.5 rounded text-zinc-600 dark:text-zinc-400 self-start mt-0.5">{v.toDestination || "-"}</span>
                     </div>
                   ))}
                   {actualExpress.length === 0 && <span className="italic text-[9px] px-1 text-zinc-400">No express vehicles</span>}
@@ -258,6 +279,11 @@ export default async function DashboardPage() {
                           <span className="font-bold text-xs uppercase tracking-wider text-zinc-900 dark:text-zinc-100 leading-none">
                             {bill.vehicleNumber}
                           </span>
+                          {(bill.driverName || bill.driverMobile) && (
+                            <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 mt-0.5" title={`Driver: ${bill.driverName || 'N/A'}`}>
+                              Dr: {bill.driverMobile || bill.driverName || 'N/A'}
+                            </span>
+                          )}
                           {bill.previousVehicleNumber && (
                             <span className="text-xs bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-1 rounded font-bold uppercase mt-1 w-fit" title="Previous Vehicle Number">
                               {bill.previousVehicleNumber}
